@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omie Heals</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ CSS VARIABLES / THEMES ============ */
+:root {
+  --bg: #0E0E12;
+  --surface: #16161C;
+  --surface2: #1E1E27;
+  --border: rgba(255,255,255,0.07);
+  --text: #F0EEE8;
+  --text2: #9A9590;
+  --accent: #C8854A;
+  --accent2: #8E6FD4;
+  --accent3: #4ABFC8;
+  --gold: #D4A853;
+  --green: #6BAF7A;
+  --red: #C85050;
+  --radius: 16px;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-serif: 'DM Serif Display', serif;
+}
+[data-theme="light"] {
+  --bg: #F5F0E8;
+  --surface: #FFFFFF;
+  --surface2: #F0EBE0;
+  --border: rgba(0,0,0,0.08);
+  --text: #1A1410;
+  --text2: #7A6A55;
+}
+[data-theme="forest"] {
+  --bg: #0B120D;
+  --surface: #121A14;
+  --surface2: #192015;
+  --border: rgba(255,255,255,0.07);
+  --text: #E8F0E0;
+  --text2: #7A9070;
+  --accent: #6BAF7A;
+  --accent2: #4ABFC8;
+}
+[data-theme="ocean"] {
+  --bg: #080E18;
+  --surface: #0E1828;
+  --surface2: #162030;
+  --border: rgba(255,255,255,0.07);
+  --text: #E0EEFF;
+  --text2: #6080A0;
+  --accent: #4ABFC8;
+  --accent2: #8E6FD4;
+}
+[data-theme="sand"] {
+  --bg: #1A1410;
+  --surface: #221C15;
+  --surface2: #2A2318;
+  --border: rgba(255,255,255,0.07);
+  --text: #F5EDD8;
+  --text2: #907860;
+  --accent: #D4A853;
+  --accent2: #C8854A;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  transition: background 0.4s, color 0.3s;
+}
+
+/* ============ ONBOARDING OVERLAY ============ */
+#onboarding {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+#onboarding.hidden { display: none; }
+
+.ob-logo {
+  font-family: var(--font-head);
+  font-size: 2rem; font-weight: 800;
+  color: var(--accent);
+  margin-bottom: 6px;
+  letter-spacing: -1px;
+}
+.ob-logo span { color: var(--text); }
+
+.ob-subtitle {
+  font-size: 13px; color: var(--text2);
+  margin-bottom: 36px; text-align: center;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+.ob-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  width: 100%; max-width: 460px;
+  margin-bottom: 14px;
+}
+
+.ob-card h3 {
+  font-family: var(--font-head);
+  font-size: 1rem; font-weight: 700;
+  margin-bottom: 16px; color: var(--accent);
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+.ob-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ob-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+
+.ob-option {
+  padding: 12px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 13px; color: var(--text2);
+  transition: all 0.2s;
+  background: var(--surface2);
+}
+.ob-option.selected { border-color: var(--accent); color: var(--accent); background: rgba(200,133,74,0.1); }
+.ob-option:hover { border-color: var(--accent); }
+
+.ob-input {
+  width: 100%; padding: 12px 14px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  color: var(--text); font-family: var(--font-body);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ob-input:focus { border-color: var(--accent); }
+.ob-input::placeholder { color: var(--text2); }
+
+.ob-input-label {
+  font-size: 12px; color: var(--text2);
+  margin-bottom: 6px; letter-spacing: 0.5px;
+  display: block;
+}
+
+.ob-row { margin-bottom: 14px; }
+
+.ob-btn {
+  width: 100%; padding: 15px;
+  background: var(--accent);
+  border: none; border-radius: 12px;
+  color: white; font-family: var(--font-head);
+  font-size: 1rem; font-weight: 700;
+  cursor: pointer; letter-spacing: 0.5px;
+  transition: opacity 0.2s; margin-top: 8px;
+}
+.ob-btn:hover { opacity: 0.88; }
+
+/* ============ MAIN APP ============ */
+#app { display: none; }
+#app.visible { display: block; }
+
+/* ============ TOPBAR ============ */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(14,14,18,0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+[data-theme="light"] .topbar { background: rgba(245,240,232,0.92); }
+
+.logo {
+  font-family: var(--font-head);
+  font-size: 1.3rem; font-weight: 800;
+  color: var(--accent); letter-spacing: -0.5px;
+}
+.logo span { color: var(--text); }
+
+.topbar-right { display: flex; gap: 10px; align-items: center; }
+
+.icon-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text2);
+  font-size: 16px; transition: all 0.2s;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ============ HERO ============ */
+.hero {
+  padding: 32px 20px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(200,133,74,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-top {
+  display: flex; align-items: flex-start;
+  justify-content: space-between; margin-bottom: 16px;
+}
+
+.hero-greeting {
+  font-family: var(--font-head);
+  font-size: clamp(1.5rem, 6vw, 2.2rem);
+  font-weight: 800; line-height: 1.1;
+  margin-bottom: 4px;
+}
+.hero-greeting .name { color: var(--accent); }
+
+.zodiac-badge {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 30px; padding: 8px 14px;
+  font-size: 12px; color: var(--text2);
+  flex-shrink: 0;
+}
+.zodiac-sign { font-size: 20px; }
+
+.affirmation-bar {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 14px; padding: 16px 18px;
+  font-family: var(--font-serif);
+  font-style: italic; font-size: 1rem;
+  line-height: 1.55; cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: transform 0.2s;
+  margin-bottom: 20px;
+}
+.affirmation-bar:hover { transform: scale(1.01); }
+.affirmation-bar::before {
+  content: '✦';
+  position: absolute; right: 14px; bottom: 10px;
+  font-size: 24px; opacity: 0.15;
+}
+.affirmation-tap { font-size: 10px; opacity: 0.65; margin-top: 6px; letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-body); font-style: normal; }
+
+/* Journey progress */
+.journey-progress {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+.jp-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.jp-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); font-weight: 600; }
+.jp-pct { font-size: 12px; color: var(--accent); font-weight: 600; }
+.jp-bar { height: 6px; background: var(--surface2); border-radius: 10px; overflow: hidden; margin-bottom: 8px; }
+.jp-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--gold)); border-radius: 10px; transition: width 1s ease; }
+.jp-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text2); }
+
+/* Streak row */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 12px;
+  text-align: center;
+}
+.stat-num { font-family: var(--font-head); font-size: 1.6rem; font-weight: 800; color: var(--accent); }
+.stat-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+/* Daily ring */
+.daily-ring-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px; text-align: center;
+  margin-bottom: 20px;
+}
+.ring-wrap { position: relative; display: inline-block; margin-bottom: 8px; }
+.ring-inner { position: absolute; top:50%;left:50%; transform:translate(-50%,-50%); text-align:center; }
+.ring-pct { font-family: var(--font-head); font-size: 1.5rem; font-weight: 800; color: var(--accent); }
+.ring-sub { font-size: 10px; color: var(--text2); letter-spacing: 1px; }
+.ring-done-text { font-size: 13px; color: var(--text2); }
+
+/* ============ NAVIGATION ============ */
+.nav-scroll {
+  display: flex; gap: 8px;
+  padding: 0 20px 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-scroll::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  flex-shrink: 0; padding: 9px 18px;
+  border-radius: 30px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--text2);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+.nav-tab.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.nav-tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+/* ============ SECTIONS ============ */
+.section { display: none; padding: 0 20px 100px; animation: fadeUp 0.3s ease; }
+.section.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+.sec-title {
+  font-family: var(--font-head);
+  font-size: 1.4rem; font-weight: 800;
+  margin-bottom: 4px;
+}
+.sec-sub { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.5; }
+
+/* ============ CARDS ============ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 12px;
+}
+.card-tag {
+  display: inline-block;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  margin-bottom: 10px;
+  background: rgba(200,133,74,0.15); color: var(--accent);
+}
+.card-tag.green { background: rgba(107,175,122,0.15); color: var(--green); }
+.card-tag.purple { background: rgba(142,111,212,0.15); color: var(--accent2); }
+.card-tag.blue { background: rgba(74,191,200,0.15); color: var(--accent3); }
+.card-tag.gold { background: rgba(212,168,83,0.15); color: var(--gold); }
+.card-tag.red { background: rgba(200,80,80,0.15); color: var(--red); }
+
+.card h3 {
+  font-family: var(--font-head);
+  font-size: 1rem; font-weight: 700;
+  margin-bottom: 10px; color: var(--text);
+}
+.card p, .card li {
+  font-size: 13.5px; line-height: 1.75;
+  color: var(--text2);
+}
+.card ul { padding-left: 16px; }
+.card li { margin-bottom: 6px; }
+.card li strong { color: var(--text); font-weight: 600; }
+
+.tip-link {
+  display: inline-block;
+  color: var(--accent3);
+  font-size: 11px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(74,191,200,0.3);
+  margin-left: 6px;
+  cursor: pointer;
+}
+.tip-link:hover { border-color: var(--accent3); }
+
+/* ============ CHECKLIST ============ */
+.checklist-group { margin-bottom: 24px; }
+.group-label {
+  font-size: 11px; text-transform: uppercase;
+  letter-spacing: 2px; color: var(--accent);
+  font-weight: 700; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.group-label::after { content:''; flex:1; height:1px; background: var(--border); }
+
+.check-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 13px 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.check-item:hover { border-color: rgba(200,133,74,0.3); }
+.check-item.done { opacity: 0.55; }
+.check-item.done .check-main { text-decoration: line-through; }
+
+.cb {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2px solid var(--accent);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s; margin-top: 1px;
+}
+.check-item.done .cb { background: var(--accent); border-color: var(--accent); }
+.cb-tick { display: none; color: white; font-size: 12px; font-weight: 700; }
+.check-item.done .cb-tick { display: block; }
+
+.check-content { flex: 1; }
+.check-main { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.check-sub { font-size: 12px; color: var(--text2); line-height: 1.5; }
+
+.check-actions { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+.check-link {
+  font-size: 11px; padding: 3px 10px;
+  border-radius: 20px;
+  background: rgba(74,191,200,0.1);
+  color: var(--accent3); text-decoration: none;
+  border: 1px solid rgba(74,191,200,0.2);
+  cursor: pointer; transition: all 0.2s;
+}
+.check-link:hover { background: rgba(74,191,200,0.2); }
+.check-link.vid { background: rgba(200,133,74,0.1); color: var(--accent); border-color: rgba(200,133,74,0.2); }
+
+/* ============ MODAL (tips/video) ============ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.8);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.hidden { display: none; }
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 500px; width: 100%;
+  max-height: 80vh; overflow-y: auto;
+}
+.modal-box h3 {
+  font-family: var(--font-head);
+  font-size: 1.1rem; font-weight: 700;
+  margin-bottom: 14px; color: var(--accent);
+}
+.modal-box p, .modal-box li {
+  font-size: 13.5px; color: var(--text2); line-height: 1.75;
+}
+.modal-box ul { padding-left: 16px; margin-bottom: 12px; }
+.modal-close {
+  width: 100%; padding: 12px;
+  background: var(--accent); border: none;
+  border-radius: 10px; color: white;
+  font-family: var(--font-body); font-size: 14px; font-weight: 600;
+  cursor: pointer; margin-top: 14px;
+}
+.modal-video-link {
+  display: block;
+  background: rgba(200,133,74,0.1);
+  border: 1px solid rgba(200,133,74,0.25);
+  border-radius: 10px; padding: 12px 14px;
+  color: var(--accent); text-decoration: none;
+  font-size: 13px; margin-bottom: 12px;
+  transition: background 0.2s;
+}
+.modal-video-link:hover { background: rgba(200,133,74,0.2); }
+
+/* ============ MEAL PLAN ============ */
+.meal-day {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden; margin-bottom: 12px;
+}
+.meal-day-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 18px;
+  background: var(--surface2);
+  cursor: pointer; font-weight: 700;
+  font-family: var(--font-head);
+}
+.meal-day-body { padding: 14px 18px; }
+.meal-slot { margin-bottom: 12px; }
+.meal-slot-title {
+  font-size: 11px; text-transform: uppercase;
+  letter-spacing: 1.5px; color: var(--accent);
+  font-weight: 700; margin-bottom: 4px;
+}
+.meal-slot p { font-size: 13.5px; color: var(--text2); line-height: 1.65; }
+.meal-cost {
+  background: rgba(107,175,122,0.1);
+  border: 1px solid rgba(107,175,122,0.2);
+  border-radius: 8px; padding: 8px 12px;
+  font-size: 13px; color: var(--green);
+  font-weight: 600; text-align: right;
+  margin-top: 10px;
+}
+
+/* ============ THEME SWITCHER ============ */
+.theme-panel {
+  position: fixed; top: 60px; right: 16px; z-index: 200;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  width: 200px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.theme-panel.hidden { display: none; }
+.theme-btn {
+  padding: 8px; border-radius: 10px;
+  border: 1.5px solid var(--border);
+  cursor: pointer; font-size: 12px;
+  font-family: var(--font-body); font-weight: 600;
+  transition: all 0.2s;
+  text-align: center;
+}
+.theme-btn:hover { border-color: var(--accent); }
+
+/* ============ DAILY CHECKIN MODAL ============ */
+.checkin-modal {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(0,0,0,0.85);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.checkin-modal.hidden { display: none; }
+.checkin-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px 24px;
+  max-width: 460px; width: 100%;
+}
+.checkin-box h3 {
+  font-family: var(--font-head);
+  font-size: 1.2rem; font-weight: 800;
+  color: var(--accent); margin-bottom: 6px;
+}
+.checkin-box p { font-size: 13px; color: var(--text2); margin-bottom: 18px; }
+.feeling-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.feeling-opt {
+  padding: 14px 8px; border-radius: 12px;
+  border: 1.5px solid var(--border);
+  text-align: center; cursor: pointer;
+  background: var(--surface2); transition: all 0.2s;
+}
+.feeling-opt.sel { border-color: var(--accent); background: rgba(200,133,74,0.1); }
+.feeling-opt .emoji { font-size: 24px; display: block; margin-bottom: 4px; }
+.feeling-opt .label { font-size: 11px; color: var(--text2); }
+.checkin-textarea {
+  width: 100%; min-height: 80px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px; color: var(--text);
+  font-family: var(--font-body); font-size: 13px;
+  padding: 12px; outline: none; resize: none;
+  margin-bottom: 14px; transition: border-color 0.2s;
+}
+.checkin-textarea:focus { border-color: var(--accent); }
+.checkin-textarea::placeholder { color: var(--text2); }
+.checkin-submit {
+  width: 100%; padding: 14px;
+  background: var(--accent); border: none;
+  border-radius: 12px; color: white;
+  font-family: var(--font-head); font-size: 1rem; font-weight: 700;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.checkin-submit:hover { opacity: 0.88; }
+
+/* ============ TRACKER CALENDAR ============ */
+.cal-month { margin-bottom: 28px; }
+.cal-month-name {
+  font-family: var(--font-head); font-weight: 700;
+  font-size: 1rem; margin-bottom: 10px; text-align: center;
+}
+.cal-labels { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 6px; }
+.cal-label { text-align: center; font-size: 10px; color: var(--text2); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-day {
+  aspect-ratio: 1; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--text2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.cal-day.empty { background: transparent; border-color: transparent; }
+.cal-day.today { background: var(--accent); color: white; font-weight: 700; border-color: var(--accent); }
+.cal-day.done { background: var(--green); color: white; border-color: var(--green); }
+.cal-day.partial { background: rgba(212,168,83,0.3); border-color: var(--gold); }
+
+/* ============ JOURNAL ============ */
+.journal-area {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  margin-bottom: 14px;
+}
+.journal-prompts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.prompt-chip {
+  padding: 7px 14px; border-radius: 20px;
+  background: var(--surface2);
+  color: var(--text2); font-size: 12px;
+  border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.2s; font-family: var(--font-body);
+}
+.prompt-chip:hover { border-color: var(--accent); color: var(--accent); }
+.journal-textarea {
+  width: 100%; min-height: 130px;
+  background: var(--surface2);
+  border: 1.5px solid var(--border);
+  border-radius: 10px; color: var(--text);
+  font-family: var(--font-serif); font-size: 1rem; font-style: italic;
+  padding: 14px; outline: none; resize: none;
+  transition: border-color 0.2s; line-height: 1.8;
+}
+.journal-textarea:focus { border-color: var(--accent); }
+.journal-textarea::placeholder { color: var(--text2); }
+.save-btn {
+  width: 100%; padding: 13px;
+  background: var(--accent); border: none;
+  border-radius: 12px; color: white;
+  font-family: var(--font-head); font-size: 0.95rem; font-weight: 700;
+  cursor: pointer; margin-top: 10px; transition: opacity 0.2s;
+}
+.save-btn:hover { opacity: 0.88; }
+.saved-entry {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+  margin-bottom: 10px;
+}
+.entry-date { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text2); margin-bottom: 8px; }
+.entry-text { font-family: var(--font-serif); font-style: italic; font-size: 0.95rem; color: var(--text); line-height: 1.75; }
+
+/* ============ PCOS/FERTILITY SECTION ============ */
+.phase-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius); padding: 18px;
+  margin-bottom: 12px;
+}
+.phase-card.green { border-left-color: var(--green); }
+.phase-card.purple { border-left-color: var(--accent2); }
+.phase-card.blue { border-left-color: var(--accent3); }
+.phase-card h3 { font-family: var(--font-head); font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+
+/* ============ RESET BTN ============ */
+.ghost-btn {
+  width: 100%; padding: 12px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 12px; color: var(--text2);
+  font-family: var(--font-body); font-size: 13px;
+  cursor: pointer; transition: all 0.2s; margin-top: 8px;
+}
+.ghost-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ============ LOGO SVG ============ */
+.logo-mark {
+  width: 34px; height: 34px; margin-right: 8px;
+  vertical-align: middle;
+}
+
+/* ============ TOAST ============ */
+.toast {
+  position: fixed; bottom: 80px; left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--accent); color: white;
+  padding: 10px 20px; border-radius: 30px;
+  font-size: 13px; font-weight: 600;
+  opacity: 0; transition: all 0.3s; z-index: 999;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ============ BOTTOM NAV ============ */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: space-around;
+  padding: 10px 0 14px; z-index: 100;
+}
+.bnav-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; cursor: pointer; padding: 4px 10px;
+  color: var(--text2); font-size: 10px;
+  transition: color 0.2s; font-family: var(--font-body);
+  border: none; background: none;
+}
+.bnav-item.active { color: var(--accent); }
+.bnav-icon { font-size: 20px; }
+
+/* ============ DIVIDER ============ */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+/* ============ KEGEL/PELVIC ============ */
+.kegel-timer {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  text-align: center; margin-bottom: 14px;
+}
+.kegel-big { font-family: var(--font-head); font-size: 3rem; font-weight: 800; color: var(--accent); }
+.kegel-status { font-size: 14px; color: var(--text2); margin: 8px 0; }
+.kegel-btn {
+  padding: 13px 32px;
+  background: var(--accent); border: none;
+  border-radius: 12px; color: white;
+  font-family: var(--font-head); font-size: 1rem; font-weight: 700;
+  cursor: pointer; margin: 6px; transition: opacity 0.2s;
+}
+.kegel-btn:hover { opacity: 0.88; }
+.kegel-btn.outline {
+  background: transparent;
+  border: 1.5px solid var(--border); color: var(--text2);
+}
+
+/* ============ SCROLL to top ============ */
+.scroll-top {
+  position: fixed; bottom: 80px; right: 16px;
+  width: 40px; height: 40px;
+  background: var(--accent); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: white; font-size: 18px;
+  box-shadow: 0 4px 16px rgba(200,133,74,0.4);
+  z-index: 50; transition: opacity 0.3s;
+  border: none;
+}
+</style>
+</head>
+<body>
+
+<!-- ==================== ONBOARDING ==================== -->
+<div id="onboarding">
+  <div class="ob-logo">
+    <svg class="logo-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="18" fill="none" stroke="#C8854A" stroke-width="2"/>
+      <path d="M20 8 C20 8, 14 14, 14 20 C14 26, 17 30, 20 32 C23 30, 26 26, 26 20 C26 14, 20 8, 20 8Z" fill="#C8854A" opacity="0.3"/>
+      <path d="M20 8 C20 8, 26 14, 26 20 C26 26, 23 30, 20 32" fill="none" stroke="#C8854A" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="20" cy="20" r="3" fill="#D4A853"/>
+      <path d="M12 20 Q20 12, 28 20" fill="none" stroke="#D4A853" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+    </svg>
+    Omie <span>Heals</span>
+  </div>
+  <p class="ob-subtitle">Your personal healing companion</p>
+
+  <div class="ob-card">
+    <h3>👋 What's your name?</h3>
+    <div class="ob-row">
+      <label class="ob-input-label">First name</label>
+      <input class="ob-input" id="ob-name" type="text" placeholder="Enter your name..." />
+    </div>
+  </div>
+
+  <div class="ob-card">
+    <h3>🌟 Your Zodiac Sign</h3>
+    <div class="ob-grid three" id="ob-zodiac">
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♈ Aries')">♈ Aries</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♉ Taurus')">♉ Taurus</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♊ Gemini')">♊ Gemini</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♋ Cancer')">♋ Cancer</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♌ Leo')">♌ Leo</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♍ Virgo')">♍ Virgo</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♎ Libra')">♎ Libra</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♏ Scorpio')">♏ Scorpio</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♐ Sagittarius')">♐ Sagit.</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♑ Capricorn')">♑ Capric.</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♒ Aquarius')">♒ Aquar.</div>
+      <div class="ob-option" onclick="selectOb(this,'zodiac','♓ Pisces')">♓ Pisces</div>
+    </div>
+  </div>
+
+  <div class="ob-card">
+    <h3>💭 How are you feeling right now?</h3>
+    <div class="feeling-grid" id="ob-feeling">
+      <div class="feeling-opt" onclick="selectOb(this,'feeling','healing')"><span class="emoji">🌱</span><span class="label">Healing</span></div>
+      <div class="feeling-opt" onclick="selectOb(this,'feeling','low')"><span class="emoji">🌧️</span><span class="label">Low</span></div>
+      <div class="feeling-opt" onclick="selectOb(this,'feeling','motivated')"><span class="emoji">🔥</span><span class="label">Motivated</span></div>
+      <div class="feeling-opt" onclick="selectOb(this,'feeling','anxious')"><span class="emoji">😰</span><span class="label">Anxious</span></div>
+      <div class="feeling-opt" onclick="selectOb(this,'feeling','hopeful')"><span class="emoji">✨</span><span class="label">Hopeful</span></div>
+      <div class="feeling-opt" onclick="selectOb(this,'feeling','numb')"><span class="emoji">🌫️</span><span class="label">Numb</span></div>
+    </div>
+    <textarea class="ob-input" id="ob-feeling-text" style="height:80px;resize:none;margin-top:8px;" placeholder="Tell me more about how you feel... (optional)"></textarea>
+  </div>
+
+  <div class="ob-card">
+    <h3>🎯 Your Main Goals</h3>
+    <div class="ob-grid" id="ob-goals">
+      <div class="ob-option" onclick="toggleGoal(this,'body')">💪 Body Glow</div>
+      <div class="ob-option" onclick="toggleGoal(this,'skin')">✨ Clear Skin</div>
+      <div class="ob-option" onclick="toggleGoal(this,'pcos')">🌸 Heal PCOS</div>
+      <div class="ob-option" onclick="toggleGoal(this,'fertility')">🤰 Fertility</div>
+      <div class="ob-option" onclick="toggleGoal(this,'mind')">🧠 Mind Growth</div>
+      <div class="ob-option" onclick="toggleGoal(this,'love')">💛 Find Love</div>
+      <div class="ob-option" onclick="toggleGoal(this,'soul')">🙏 Soul Peace</div>
+      <div class="ob-option" onclick="toggleGoal(this,'weight')">⚖️ Weight</div>
+    </div>
+  </div>
+
+  <div class="ob-card">
+    <h3>📍 Where are you based?</h3>
+    <div class="ob-grid" id="ob-location">
+      <div class="ob-option selected" onclick="selectOb(this,'location','Nigeria')">🇳🇬 Nigeria</div>
+      <div class="ob-option" onclick="selectOb(this,'location','Ghana')">🇬🇭 Ghana</div>
+      <div class="ob-option" onclick="selectOb(this,'location','Kenya')">🇰🇪 Kenya</div>
+      <div class="ob-option" onclick="selectOb(this,'location','Other Africa')">🌍 Other Africa</div>
+      <div class="ob-option" onclick="selectOb(this,'location','UK')">🇬🇧 UK</div>
+      <div class="ob-option" onclick="selectOb(this,'location','Other')">🌐 Other</div>
+    </div>
+  </div>
+
+  <div class="ob-card">
+    <h3>🩺 Health Conditions (select all that apply)</h3>
+    <div class="ob-grid" id="ob-conditions">
+      <div class="ob-option" onclick="toggleGoal(this,'pcos-c')">PCOS</div>
+      <div class="ob-option" onclick="toggleGoal(this,'hyper-c')">Hyperpigmentation</div>
+      <div class="ob-option" onclick="toggleGoal(this,'dark-c')">Dark inner thighs</div>
+      <div class="ob-option" onclick="toggleGoal(this,'acne-c')">Acne</div>
+      <div class="ob-option" onclick="toggleGoal(this,'pelvic-c')">Pelvic weakness</div>
+      <div class="ob-option" onclick="toggleGoal(this,'loss-c')">Healing from loss</div>
+      <div class="ob-option" onclick="toggleGoal(this,'anxiety-c')">Anxiety/stress</div>
+      <div class="ob-option" onclick="toggleGoal(this,'weight-c')">Weight management</div>
+    </div>
+  </div>
+
+  <div style="max-width:460px;width:100%;">
+    <button class="ob-btn" onclick="completeOnboarding()">✦ Begin My Healing Journey</button>
+  </div>
+</div>
+
+<!-- ==================== MAIN APP ==================== -->
+<div id="app">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;">
+      <svg class="logo-mark" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="18" fill="none" stroke="#C8854A" stroke-width="2"/>
+        <path d="M20 8 C20 8, 14 14, 14 20 C14 26, 17 30, 20 32 C23 30, 26 26, 26 20 C26 14, 20 8, 20 8Z" fill="#C8854A" opacity="0.3"/>
+        <path d="M20 8 C20 8, 26 14, 26 20 C26 26, 23 30, 20 32" fill="none" stroke="#C8854A" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="20" cy="20" r="3" fill="#D4A853"/>
+      </svg>
+      <span class="logo">Omie <span>Heals</span></span>
+    </div>
+    <div class="topbar-right">
+      <button class="icon-btn" onclick="toggleTheme()" title="Change theme">◑</button>
+      <button class="icon-btn" onclick="openCheckin()" title="Daily check-in">😊</button>
+      <button class="icon-btn" onclick="resetOnboarding()" title="Edit profile">⚙</button>
+    </div>
+  </div>
+
+  <!-- Theme panel -->
+  <div class="theme-panel hidden" id="themePanel">
+    <button class="theme-btn" style="background:#0E0E12;color:#C8854A;border-color:#C8854A" onclick="setTheme('dark')">🌑 Dark</button>
+    <button class="theme-btn" style="background:#F5F0E8;color:#1A1410;" onclick="setTheme('light')">☀️ Light</button>
+    <button class="theme-btn" style="background:#0B120D;color:#6BAF7A;border-color:#6BAF7A" onclick="setTheme('forest')">🌿 Forest</button>
+    <button class="theme-btn" style="background:#080E18;color:#4ABFC8;border-color:#4ABFC8" onclick="setTheme('ocean')">🌊 Ocean</button>
+    <button class="theme-btn" style="background:#1A1410;color:#D4A853;border-color:#D4A853" onclick="setTheme('sand')">🏜️ Sand</button>
+    <button class="theme-btn" onclick="setTheme('dark')" style="grid-column:1/-1;background:var(--surface2)">✕ Close</button>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-top">
+      <div>
+        <div class="hero-greeting">Hey, <span class="name" id="heroName">Healer</span> ✦</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:2px;" id="heroDate">Loading...</div>
+      </div>
+      <div class="zodiac-badge">
+        <span class="zodiac-sign" id="zodiacSign">✦</span>
+        <span id="zodiacName" style="font-size:11px;"></span>
+      </div>
+    </div>
+
+    <div class="affirmation-bar" onclick="nextAffirmation()">
+      <div id="affirmText">Loading...</div>
+      <div class="affirmation-tap">Tap for a new one</div>
+    </div>
+
+    <div class="journey-progress">
+      <div class="jp-top">
+        <span class="jp-title">Journey: Apr 4 → Dec 31</span>
+        <span class="jp-pct" id="jpPct">0%</span>
+      </div>
+      <div class="jp-bar"><div class="jp-fill" id="jpFill" style="width:0%"></div></div>
+      <div class="jp-meta">
+        <span id="jpDay">Day 0 of 272</span>
+        <span id="jpLeft">272 days left</span>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-num" id="statStreak">0</div>
+        <div class="stat-label">🔥 Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statDone">0</div>
+        <div class="stat-label">✦ Today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="statTotal">0</div>
+        <div class="stat-label">📅 Total Days</div>
+      </div>
+    </div>
+
+    <div class="daily-ring-section">
+      <div class="ring-wrap">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface2)" stroke-width="8"/>
+          <circle cx="50" cy="50" r="42" fill="none" stroke="url(#rg)" stroke-width="8"
+            stroke-dasharray="264" id="ringCircle" stroke-dashoffset="264"
+            stroke-linecap="round" transform="rotate(-90 50 50)" style="transition:stroke-dashoffset 0.8s"/>
+          <defs><linearGradient id="rg"><stop offset="0%" stop-color="#C8854A"/><stop offset="100%" stop-color="#D4A853"/></linearGradient></defs>
+        </svg>
+        <div class="ring-inner">
+          <div class="ring-pct" id="ringPct">0%</div>
+          <div class="ring-sub">DONE</div>
+        </div>
+      </div>
+      <div class="ring-done-text"><span id="ringDone">0</span> of <span id="ringTotal">0</span> habits complete today</div>
+    </div>
+  </div>
+
+  <!-- Nav Tabs -->
+  <div class="nav-scroll">
+    <button class="nav-tab active" onclick="showTab('today',this)">✦ Today</button>
+    <button class="nav-tab" onclick="showTab('skin',this)">Skin</button>
+    <button class="nav-tab" onclick="showTab('body',this)">Body</button>
+    <button class="nav-tab" onclick="showTab('food',this)">Food</button>
+    <button class="nav-tab" onclick="showTab('pcos',this)">PCOS & Fertility</button>
+    <button class="nav-tab" onclick="showTab('pelvic',this)">Pelvic</button>
+    <button class="nav-tab" onclick="showTab('mind',this)">Mind</button>
+    <button class="nav-tab" onclick="showTab('soul',this)">Soul</button>
+    <button class="nav-tab" onclick="showTab('meals',this)">Meals</button>
+    <button class="nav-tab" onclick="showTab('tracker',this)">Tracker</button>
+    <button class="nav-tab" onclick="showTab('journal',this)">Journal</button>
+  </div>
+
+  <!-- ======= TODAY ======= -->
+  <div class="section active" id="sec-today">
+    <div class="checklist-group">
+      <div class="group-label">🌅 Morning Rituals</div>
+      <div class="check-item" onclick="toggle(this,'m1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Drink 500ml warm water (on empty stomach)</div>
+          <div class="check-sub">Before any food or phone. Kickstarts digestion and lymph.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'warm-water')">💡 Why this works</span>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'m2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Morning skincare (cleanse + tone + moisturise)</div>
+          <div class="check-sub">2-3 mins. Use shea butter as moisturiser.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'morning-skin')">💡 Step-by-step</span>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'m3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Morning movement (10–30 mins walk or workout)</div>
+          <div class="check-sub">Running is allowed with PCOS! Keep it light-moderate.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'pcos-run')">💡 PCOS & Running</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=beginner+morning+walk+workout" target="_blank">▶ Video Guide</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'m4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Protein breakfast within 1 hour of waking</div>
+          <div class="check-sub">Eggs, beans, or soy milk oats. Stabilises PCOS hormones.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'protein-break')">💡 Why protein first</span>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'m5')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">3 mirror affirmations (out loud)</div>
+          <div class="check-sub">Say 3 things you love or are becoming. Look yourself in the eye.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'mirror-aff')">💡 How to do this</span>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'m6')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Cinnamon + ginger tea (no sugar)</div>
+          <div class="check-sub">Powerful PCOS regulator. Boosts insulin sensitivity.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'cinn-tea')">💡 How to make it</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="group-label">☀️ Afternoon Habits</div>
+      <div class="check-item" onclick="toggle(this,'a1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Main workout (20–40 mins)</div>
+          <div class="check-sub">Glute bridges, squats, hip thrusts, or a run. See Body tab.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'workout-tip')">💡 Today's workout</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=home+glute+workout+no+equipment+beginners" target="_blank">▶ Watch how</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'a2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Kegel + pelvic floor exercises (5 mins)</div>
+          <div class="check-sub">Tightens and strengthens. Use the Pelvic tab for the timer.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTab('pelvic',null)">Go to Pelvic tab →</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=kegel+exercises+for+women+beginners" target="_blank">▶ How to do Kegels</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'a3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Shea butter massage on dark/hyperpigmented areas</div>
+          <div class="check-sub">Circular motions on inner thighs, underarms, and face.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'shea-massage')">💡 Technique guide</span>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'a4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Read or listen to something enriching (15 mins)</div>
+          <div class="check-sub">Book, podcast, TED Talk, documentary. Feed your brain daily.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.ted.com/talks" target="_blank">▶ TED Talks (free)</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'a5')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Drink 2 more cups of water / herbal tea</div>
+          <div class="check-sub">Total daily goal: 6–8 cups. Hydration = glow from inside.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'a6')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Creative act (5–10 mins)</div>
+          <div class="check-sub">Sketch, write a sentence, style something, take a photo.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'creative-tip')">💡 Ideas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="group-label">🌙 Evening Wind-Down</div>
+      <div class="check-item" onclick="toggle(this,'e1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Night skincare routine (10 mins)</div>
+          <div class="check-sub">Double cleanse → neem toner → vitamin E + shea night cream.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'night-skin')">💡 Full routine</span>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'e2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Dark thigh / hyperpigmentation treatment</div>
+          <div class="check-sub">Potato slice, lemon-honey, or turmeric paste. 10–15 mins.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'dark-thigh')">💡 Recipes</span>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'e3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Gratitude + healing journal entry (5 mins)</div>
+          <div class="check-sub">What am I healing, growing into, grateful for today?</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTab('journal',null)">Open Journal →</span>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'e4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">No phone 30 mins before bed</div>
+          <div class="check-sub">Blue light disrupts melatonin and hormone repair sleep cycles.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'no-phone')">💡 Why it matters</span>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'e5')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Bedtime healing affirmation</div>
+          <div class="check-sub">"My body is healing. I am safe. I am whole. I am becoming."</div>
+        </div>
+      </div>
+    </div>
+
+    <button class="ghost-btn" onclick="resetToday()">↺ Reset today's checklist</button>
+  </div>
+
+  <!-- ======= SKIN ======= -->
+  <div class="section" id="sec-skin">
+    <div class="sec-title">Skin Rituals</div>
+    <div class="sec-sub">Hyperpigmentation · Dark thighs · Acne · Clear glow — all Nigerian ingredients</div>
+
+    <div class="checklist-group">
+      <div class="group-label">🌅 Morning Skin Checklist</div>
+      <div class="check-item" onclick="toggle(this,'sk-m1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Cold water rinse (no soap in AM)</div>
+          <div class="check-sub">Cold water tightens pores and doesn't strip natural oils.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'cold-rinse')">💡 Why cold water</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-m2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Lemon + water toner (1 tsp lemon : 3 tsp water)</div>
+          <div class="check-sub">Apply with cotton wool. Brightens and controls oil.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'lemon-toner')">💡 How to make it</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-m3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Shea butter moisturise (small amount, warm between palms)</div>
+          <div class="check-sub">Pure shea (ori) only. No bleaching ingredients.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'shea-apply')">💡 How to apply</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-m4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Apply sunscreen before going outside</div>
+          <div class="check-sub">Even affordable SPF30 protects brightening work from reversing.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="group-label">🌙 Night Skin Checklist</div>
+      <div class="check-item" onclick="toggle(this,'sk-n1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Oil cleanse with coconut or shea oil</div>
+          <div class="check-sub">Massage into dry skin 1 min, rinse with warm water.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'oil-cleanse')">💡 Oil cleansing method</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-n2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Black soap second cleanse</div>
+          <div class="check-sub">Lather, apply, rinse. Anti-bacterial and brightening.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'black-soap')">💡 Benefits</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=african+black+soap+skincare+routine" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-n3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Neem leaf toner (boiled neem water, cooled)</div>
+          <div class="check-sub">Fights bacteria, reduces acne, brightens tone.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'neem-toner')">💡 How to prepare</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-n4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Vitamin E + shea night cream (squeeze 1 capsule into shea)</div>
+          <div class="check-sub">Powerful skin repair. Apply generously, sleep on clean pillowcase.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'vit-e-night')">💡 How it works</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="group-label">✨ Weekly Treatments (pick 2-3 per week)</div>
+      <div class="check-item" onclick="toggle(this,'sk-w1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Raw honey face mask (5–10 mins)</div>
+          <div class="check-sub">Anti-bacterial, hydrating, brightening. Leave on, then rinse.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'honey-mask')">💡 Full instructions</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-w2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Papaya + oat scrub (exfoliate face and body)</div>
+          <div class="check-sub">Mash ripe pawpaw + oats. Gentle enzyme exfoliant.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'papaya-scrub')">💡 Recipe</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-w3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Potato slice on dark thighs / inner arms (10 mins)</div>
+          <div class="check-sub">Raw potato has natural kojic acid — a proven dark-spot fighter.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'potato-dark')">💡 How to use</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-w4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Turmeric + coconut oil paste on dark areas (15 mins)</div>
+          <div class="check-sub">Mix ½ tsp turmeric with 1 tsp coconut oil. Anti-inflammatory.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'turmeric-paste')">💡 Step-by-step</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-w5')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Lemon + honey mask (15 mins, avoid direct sunlight after)</div>
+          <div class="check-sub">1 tsp honey + ½ tsp lemon juice. Brightening treatment.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'lemon-honey')">💡 Safety tips</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sk-w6')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Steam face with hot water + neem leaves (5 mins)</div>
+          <div class="check-sub">Opens pores deeply. Follow with cold rinse to close them.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'face-steam')">💡 How to steam safely</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=how+to+steam+face+at+home" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">Shop List</div>
+      <h3>Affordable Nigerian Ingredients</h3>
+      <ul>
+        <li><strong>Raw shea butter (Ori)</strong> — ₦500–800 / 100g</li>
+        <li><strong>African black soap</strong> — ₦200–400</li>
+        <li><strong>Raw honey</strong> — ₦500–1,000</li>
+        <li><strong>Neem leaves</strong> — often free (common tree)</li>
+        <li><strong>Coconut oil</strong> — ₦500–1,000</li>
+        <li><strong>Turmeric (atale pupa)</strong> — ₦200–400</li>
+        <li><strong>Vitamin E capsules (400IU)</strong> — ₦500/pack</li>
+        <li><strong>Lemon</strong> — ₦50–100 each</li>
+        <li><strong>Raw potato</strong> — ₦50–100</li>
+        <li>Total estimated spend: <strong>₦2,500–4,000/month</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ======= BODY ======= -->
+  <div class="section" id="sec-body">
+    <div class="sec-title">Body Transformation</div>
+    <div class="sec-sub">Tiny waist · Bigger glutes · Fuller chest · Zero equipment needed</div>
+
+    <div class="checklist-group">
+      <div class="group-label">💪 Waist Exercises</div>
+      <div class="check-item" onclick="toggle(this,'b-w1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Vacuum exercise — 5 reps × 30 secs hold</div>
+          <div class="check-sub">Exhale fully, suck stomach to spine. Best done fasted in morning.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'vacuum-ex')">💡 How to do it</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=stomach+vacuum+exercise+how+to" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'b-w2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Russian twists — 3 sets × 20 reps</div>
+          <div class="check-sub">Sit at 45°, hands clasped, rotate side to side. Great oblique burner.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=russian+twist+how+to+beginners" target="_blank">▶ Watch technique</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'b-w3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Bicycle crunches — 3 sets × 30 reps</div>
+          <div class="check-sub">Lie down, alternate elbow to opposite knee. Best waist exercise.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=bicycle+crunches+proper+form" target="_blank">▶ Watch form</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'b-w4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Side plank dips — 3 × 10 each side</div>
+          <div class="check-sub">Targets the obliques and love handles directly.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=side+plank+hip+dips+how+to" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="group-label">🍑 Glute / Butt Exercises</div>
+      <div class="check-item" onclick="toggle(this,'b-g1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Hip thrusts — 4 sets × 15 reps (use bag of rice as weight)</div>
+          <div class="check-sub">Best glute exercise. Shoulders on chair/bed, thrust hips up, squeeze at top.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'hip-thrust')">💡 Setup guide</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=hip+thrusts+at+home+no+equipment+beginners" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'b-g2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Glute bridges — 3 × 20 (squeeze 3 secs at top)</div>
+          <div class="check-sub">Lie on back, feet flat, thrust hips up and SQUEEZE hard.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=glute+bridges+proper+form+beginners" target="_blank">▶ Watch form</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'b-g3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Donkey kicks — 3 × 20 each leg</div>
+          <div class="check-sub">On all fours, kick one leg up and back, squeeze glute at top.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=donkey+kicks+exercise+beginners" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'b-g4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Squat with 3-count pulse at bottom — 3 × 15</div>
+          <div class="check-sub">Go deep, hold at bottom, pulse 3 times before coming up.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=squat+pulse+exercise+how+to" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'b-g5')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Step-ups on chair — 3 × 12 each leg</div>
+          <div class="check-sub">Use a sturdy chair. Step up, drive knee up, step down slowly.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=step+up+exercise+chair+at+home" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="group-label">💕 Chest & Upper Body</div>
+      <div class="check-item" onclick="toggle(this,'b-c1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Wide-grip push-ups — 3 × 10 (knees on floor is fine)</div>
+          <div class="check-sub">Wide hands = more chest activation. Builds pectoral support.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=wide+push+ups+for+beginners+women+chest" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'b-c2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Chest press with water bottles — 3 × 12</div>
+          <div class="check-sub">Lie on back, press 1.5L bottles up from chest level. Controlled.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=dumbbell+chest+press+beginners+home" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'b-c3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Chest flys with bottles — 3 × 12</div>
+          <div class="check-sub">Arms wide, bring above chest slowly. Squeeze at top.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=dumbbell+chest+fly+beginners+form" target="_blank">▶ Watch form</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="checklist-group">
+      <div class="group-label">🏃 Running (PCOS-safe cardio)</div>
+      <div class="check-item" onclick="toggle(this,'b-r1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Run/walk intervals — 20 mins (run 1 min, walk 2 mins × 6)</div>
+          <div class="check-sub">YES, running is great for PCOS! Improves insulin sensitivity.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'pcos-run')">💡 PCOS running rules</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=beginners+running+plan+women+couch+to+5k" target="_blank">▶ Beginner plan</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'b-r2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Stretch for 5 mins after running</div>
+          <div class="check-sub">Hip flexors, hamstrings, calves. Prevents injury and tightens legs.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=post+run+stretches+for+beginners" target="_blank">▶ Stretch guide</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag gold">Weekly Schedule</div>
+      <h3>Suggested Weekly Plan</h3>
+      <ul>
+        <li><strong>Mon:</strong> Glutes + waist (30 min)</li>
+        <li><strong>Tue:</strong> Easy 20-min walk/run</li>
+        <li><strong>Wed:</strong> Chest + arms + core</li>
+        <li><strong>Thu:</strong> Rest or gentle yoga stretching</li>
+        <li><strong>Fri:</strong> Full lower body (glutes, thighs)</li>
+        <li><strong>Sat:</strong> Dance for 30 mins — afrobeats, whatever feels good</li>
+        <li><strong>Sun:</strong> Walk + rest + womb care</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ======= FOOD ======= -->
+  <div class="section" id="sec-food">
+    <div class="sec-title">Nourishment</div>
+    <div class="sec-sub">PCOS-friendly · Nigerian foods · Hormone-balancing · Budget meals</div>
+
+    <div class="checklist-group">
+      <div class="group-label">🥗 Daily Food Checklist</div>
+      <div class="check-item" onclick="toggle(this,'f1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Eat protein at every meal</div>
+          <div class="check-sub">Eggs, beans, fish, chicken, groundnuts. Stabilises blood sugar.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'protein-pcos')">💡 Why protein fights PCOS</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'f2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">No sugary drinks today (soft drink, juice box, zobo with sugar)</div>
+          <div class="check-sub">Sugar spikes are the #1 enemy of PCOS healing.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'sugar-pcos')">💡 What to drink instead</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'f3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Include at least 1 green vegetable (ugwu, spinach, bitter leaf)</div>
+          <div class="check-sub">Iron, folate, skin glow, hormone balance. Essential daily.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'f4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Cinnamon + ginger in food or tea</div>
+          <div class="check-sub">Both regulate insulin — the root problem in PCOS.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'cinn-pcos')">💡 How much to use</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'f5')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Eat breakfast within 1 hour of waking</div>
+          <div class="check-sub">Skipping breakfast worsens cortisol and PCOS inflammation.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'f6')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Drink 6–8 cups of water today</div>
+          <div class="check-sub">Skin glow, digestion, hormone flushing — all need water.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'f7')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Include healthy fat (avocado, coconut oil, groundnuts, eggs)</div>
+          <div class="check-sub">Healthy fats make hormones. No fat = no hormones.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'healthy-fat')">💡 Why fat is essential</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag green">Best Foods</div>
+      <h3>Your Nigerian Power Foods</h3>
+      <ul>
+        <li>🥬 <strong>Ugwu (pumpkin leaf)</strong> — iron, folate, fertility, skin</li>
+        <li>🥑 <strong>Avocado</strong> — hormone fat, waist-trimming, skin glow</li>
+        <li>🐟 <strong>Mackerel (titus)</strong> — omega-3, reduces PCOS inflammation</li>
+        <li>🥚 <strong>Eggs</strong> — complete protein, breast tissue, collagen</li>
+        <li>🍠 <strong>Sweet potato</strong> — beta-carotene, skin, better than white rice</li>
+        <li>🫘 <strong>Beans</strong> — protein + fibre, fills you, good for belly</li>
+        <li>🌰 <strong>Groundnuts</strong> — cheap healthy fat, skin and hormones</li>
+        <li>🌿 <strong>Moringa powder</strong> — iron, folate, blood building, fertility</li>
+        <li>🍋 <strong>Lemon</strong> — detox, vitamin C, skin clearing</li>
+        <li>🌸 <strong>Unsweetened zobo</strong> — antioxidants, anti-inflammatory</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-tag red">Reduce These</div>
+      <h3>Foods that fight PCOS Healing</h3>
+      <ul>
+        <li>White bread, white rice daily (swap for ofada, sweet potato, oats)</li>
+        <li>Soft drinks, pure water sachets with sugar</li>
+        <li>Fried snacks every day (occasional is fine)</li>
+        <li>Excess palm oil (a little is fine — excess causes inflammation)</li>
+        <li>Skipping meals</li>
+        <li>Late-night eating after 9pm</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ======= PCOS & FERTILITY ======= -->
+  <div class="section" id="sec-pcos">
+    <div class="sec-title">PCOS & Fertility Healing</div>
+    <div class="sec-sub">Natural daily steps to heal PCOS, balance hormones, and prepare your body for babies</div>
+
+    <div class="checklist-group">
+      <div class="group-label">🌸 Daily PCOS Healing Checklist</div>
+      <div class="check-item" onclick="toggle(this,'pc1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Spearmint tea (1 cup daily)</div>
+          <div class="check-sub">Proven in studies to reduce androgens (the male hormones elevated in PCOS).</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'spearmint')">💡 Evidence & how to brew</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pc2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Cinnamon in tea or food (½ tsp daily)</div>
+          <div class="check-sub">Regulates insulin resistance which drives most PCOS symptoms.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'cinn-pcos')">💡 How it works</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pc3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">No refined sugar today</div>
+          <div class="check-sub">Insulin spikes worsen all PCOS symptoms. This is the most powerful daily action.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pc4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Exercise (walk, run, or strength train)</div>
+          <div class="check-sub">Improves insulin sensitivity. Even 20 mins daily changes PCOS outcomes.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'pcos-ex')">💡 Best PCOS exercises</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pc5')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Manage stress today (breathe, pray, journal)</div>
+          <div class="check-sub">Cortisol directly triggers PCOS flare-ups. Stress reduction is medicine.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'stress-pcos')">💡 Cortisol & PCOS link</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pc6')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Sleep 7–8 hours tonight</div>
+          <div class="check-sub">Sleep is when your hormones reset. Poor sleep = worse PCOS.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pc7')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Castor oil pack on lower abdomen (2× weekly)</div>
+          <div class="check-sub">Warm castor oil on cloth, apply to belly, cover with towel 30 mins. Supports uterine healing.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'castor-pack')">💡 How to do it</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=castor+oil+pack+how+to+fertility" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pc8')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Eat folate-rich food today (ugwu, eggs, beans)</div>
+          <div class="check-sub">Folate is critical for egg quality and early pregnancy health.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'folate')">💡 Folate & fertility</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase-card">
+      <h3>🌱 Phase 1 (Apr–Jun): Reset</h3>
+      <p style="font-size:13px;color:var(--text2);line-height:1.75;">Cut sugar, start cinnamon tea daily, walk 20 mins daily, learn your cycle. The goal is to regulate your blood sugar and calm inflammation. Your body will start responding within 4–6 weeks.</p>
+    </div>
+    <div class="phase-card green">
+      <h3>🌿 Phase 2 (Jul–Sep): Strengthen</h3>
+      <p style="font-size:13px;color:var(--text2);line-height:1.75;">Add strength training. Include moringa and spearmint tea. Track your cycle. Symptoms like irregular periods, facial hair, and acne should start improving. Your skin will visibly clear.</p>
+    </div>
+    <div class="phase-card purple">
+      <h3>🌸 Phase 3 (Oct–Dec): Bloom</h3>
+      <p style="font-size:13px;color:var(--text2);line-height:1.75;">Your hormones are more balanced. Your body feels more regulated. This is when fertility improves naturally. Track ovulation. Talk to a doctor about next steps if ready to conceive.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-tag blue">Infections & Symptoms</div>
+      <h3>Common Infections & Natural Support</h3>
+      <ul>
+        <li><strong>BV / Vaginal odour:</strong> Eat plain yogurt (probiotics), avoid scented soaps near vagina, wear cotton underwear. See a doctor for recurring cases.</li>
+        <li><strong>UTI (burning when urinating):</strong> Drink lots of water, unsweetened cranberry juice, see a doctor promptly.</li>
+        <li><strong>Yeast infection:</strong> Reduce sugar drastically, apply plain yogurt externally temporarily, see a doctor. PCOS raises yeast risk.</li>
+        <li><strong>Irregular period:</strong> The PCOS daily protocol above (cinnamon, exercise, reduce sugar) is your best natural tool.</li>
+        <li><strong>IMPORTANT:</strong> Always see a doctor for infections — natural remedies support but do not replace medical care.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ======= PELVIC ======= -->
+  <div class="section" id="sec-pelvic">
+    <div class="sec-title">Pelvic Floor & Tightening</div>
+    <div class="sec-sub">Kegel exercises · Pelvic strengthening · Vaginal tightening · Daily routine</div>
+
+    <div class="card">
+      <div class="card-tag">What are Kegels?</div>
+      <h3>Understanding Pelvic Floor Exercises</h3>
+      <p style="font-size:13.5px;color:var(--text2);line-height:1.75;">Kegel exercises contract and release your pelvic floor muscles — the same muscles you use to stop urine mid-flow. Doing them daily tightens the vagina, strengthens bladder control, reduces prolapse risk, and improves sensation. Results appear within 6–12 weeks of daily practice. They can be done anywhere, no one can tell.</p>
+    </div>
+
+    <div class="checklist-group">
+      <div class="group-label">💪 Daily Pelvic Checklist</div>
+      <div class="check-item" onclick="toggle(this,'pv1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Kegel set 1 — 10 reps × 5 sec hold, 5 sec release</div>
+          <div class="check-sub">Squeeze pelvic floor, hold 5 secs, release 5 secs. Do in morning.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="openKegel()">⏱ Use Kegel Timer</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=kegel+exercises+for+women+how+to+pelvic+floor" target="_blank">▶ Learn how</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pv2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Kegel set 2 — 10 quick pulses (flutter kegels)</div>
+          <div class="check-sub">Fast rapid squeezes. Do in afternoon — different muscle fibre type.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'flutter-kegel')">💡 Difference between types</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pv3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Bridge hold with pelvic squeeze — 3 × 10</div>
+          <div class="check-sub">Glute bridge position, hold at top, simultaneously squeeze pelvic floor.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=glute+bridge+kegel+combination+pelvic+floor" target="_blank">▶ Watch combo</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pv4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Squats (pelvic floor activator)</div>
+          <div class="check-sub">Deep squats naturally strengthen pelvic floor AND glutes together.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'squat-pelvic')">💡 Squats & pelvic floor</span>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'pv5')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Yoni steam (1× weekly) — optional, gentle</div>
+          <div class="check-sub">Sit over bowl of hot neem/ginger/herb water. Supports vaginal health & uterus.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'yoni-steam')">💡 How to do safely</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=yoni+steam+at+home+how+to" target="_blank">▶ Watch</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KEGEL TIMER -->
+    <div class="kegel-timer" id="kegelTimer">
+      <div style="font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);margin-bottom:6px;">Kegel Timer</div>
+      <div class="kegel-big" id="kegelCount">5</div>
+      <div class="kegel-status" id="kegelStatus">Press Start to begin your session</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:14px;">Rep <span id="kegelRep">0</span> / 10</div>
+      <button class="kegel-btn" id="kegelStartBtn" onclick="startKegel()">▶ Start</button>
+      <button class="kegel-btn outline" onclick="resetKegel()">↺ Reset</button>
+    </div>
+
+    <div class="card">
+      <div class="card-tag green">Results Timeline</div>
+      <h3>What to Expect</h3>
+      <ul>
+        <li><strong>Week 1–2:</strong> Awareness of the muscles, mild soreness</li>
+        <li><strong>Week 3–4:</strong> Stronger contractions, better bladder control</li>
+        <li><strong>Week 6–8:</strong> Noticeable tightening, improved sensation</li>
+        <li><strong>Month 3+:</strong> Significant changes with daily consistency</li>
+        <li>Do 3 sets every single day for best results</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ======= MIND ======= -->
+  <div class="section" id="sec-mind">
+    <div class="sec-title">Mind Growth</div>
+    <div class="sec-sub">Sharper, smarter, more creative — every single day</div>
+
+    <div class="checklist-group">
+      <div class="group-label">🧠 Daily Mind Checklist</div>
+      <div class="check-item" onclick="toggle(this,'mn1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Read for 15–30 minutes</div>
+          <div class="check-sub">News, self-help, fiction, anything. Reading grows new neural pathways.</div>
+          <div class="check-actions">
+            <a class="check-link vid" href="https://libgen.is" target="_blank">📚 Free books</a>
+            <a class="check-link vid" href="https://www.ted.com/talks" target="_blank">▶ TED Talks</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'mn2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Learn 1 new word or fact today</div>
+          <div class="check-sub">Write it down. Use it in a sentence. Vocabulary is intelligence made visible.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'mn3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">No social media for the first hour of the day</div>
+          <div class="check-sub">Protect your morning brain. Early focus = higher productivity all day.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'no-social')">💡 Why this matters</span></div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'mn4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Write something today (journal, ideas, story)</div>
+          <div class="check-sub">Writing develops critical thinking, memory, and emotional intelligence.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'mn5')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Do one creative act</div>
+          <div class="check-sub">Sketch, cook something new, style differently, take a beautiful photo.</div>
+          <div class="check-actions"><span class="check-link" onclick="showTip(event,'creative-tip')">💡 Creativity ideas</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">Free Learning</div>
+      <h3>Learn For Free (Nigeria-accessible)</h3>
+      <ul>
+        <li>📱 <strong>YouTube</strong> — search "learn [topic] for beginners"</li>
+        <li>🎓 <strong>Coursera (audit free)</strong> — Harvard, Stanford courses</li>
+        <li>🧠 <strong>Khan Academy</strong> — math, science, economics</li>
+        <li>🎙️ <strong>TED Talks</strong> — ted.com/talks (free)</li>
+        <li>📚 <strong>Library Genesis</strong> — libgen.is (free books)</li>
+        <li>🌐 <strong>Google Digital Skills</strong> — learndigital.withgoogle.com</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-tag purple">9-Month Skill</div>
+      <h3>Build One Skill This Year</h3>
+      <p style="font-size:13.5px;color:var(--text2);margin-bottom:10px;">Pick ONE and commit for 9 months. Daily practice over time creates mastery.</p>
+      <ul>
+        <li>Graphic design (Canva → Figma)</li>
+        <li>Content creation / blogging</li>
+        <li>Sewing / tailoring</li>
+        <li>Baking / cake decorating</li>
+        <li>Basic coding (HTML, no-code tools)</li>
+        <li>Photography with your phone</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ======= SOUL ======= -->
+  <div class="section" id="sec-soul">
+    <div class="sec-title">Soul Healing</div>
+    <div class="sec-sub">Healing from loss · Opening to love · Growing in wholeness · Spiritual grounding</div>
+
+    <div class="checklist-group">
+      <div class="group-label">🙏 Daily Soul Checklist</div>
+      <div class="check-item" onclick="toggle(this,'sl1')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">5 minutes of stillness (prayer, meditation, or breathing)</div>
+          <div class="check-sub">Sit quietly. Breathe deeply. You don't need words — just presence.</div>
+          <div class="check-actions">
+            <span class="check-link" onclick="showTip(event,'breathing-tip')">💡 Simple breathing guide</span>
+            <a class="check-link vid" href="https://www.youtube.com/results?search_query=5+minute+meditation+for+healing+beginners" target="_blank">▶ Guided meditation</a>
+          </div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sl2')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Set one intention for the day</div>
+          <div class="check-sub">"Today I choose peace." / "Today I am enough." Say it, write it.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sl3')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Do one kind thing for yourself (not productive — just kind)</div>
+          <div class="check-sub">Rest. Eat slowly. Wear something you love. Watch the sky.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sl4')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Spend 10 mins in nature or with sunlight</div>
+          <div class="check-sub">Vitamin D, mood regulation, nervous system healing. Sit outside.</div>
+        </div>
+      </div>
+      <div class="check-item" onclick="toggle(this,'sl5')">
+        <div class="cb"><span class="cb-tick">✓</span></div>
+        <div class="check-content">
+          <div class="check-main">Write in your healing journal tonight</div>
+          <div class="check-sub">What are you releasing? What are you becoming? What are you grateful for?</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag">Zodiac Wisdom</div>
+      <h3 id="zodiacSoulTitle">Your Sign's Healing Path</h3>
+      <p id="zodiacSoulText" style="font-size:13.5px;color:var(--text2);line-height:1.75;">Loading your zodiac insight...</p>
+    </div>
+
+    <div class="card">
+      <div class="card-tag purple">Opening to Love</div>
+      <h3>Preparing Your Heart</h3>
+      <ul>
+        <li>Write your values — what truly matters in a relationship</li>
+        <li>Heal the story that says you are not enough</li>
+        <li>Know your body — loving yourself is magnetic</li>
+        <li>Be present in your life — love comes through the ordinary</li>
+        <li>Pray, visualise, and then release the "when"</li>
+        <li>Build the life you want — attraction follows aliveness</li>
+      </ul>
+    </div>
+
+    <div class="phase-card purple">
+      <h3>💛 A Word About Your Loss</h3>
+      <p style="font-size:13.5px;color:var(--text2);line-height:1.75;">Grief takes the shape of you. There is no right timeline and no wrong way to heal. You are allowed to be in multiple places at once — healing and hoping, grieving and growing, broken and becoming. Both things are always true. Give yourself the same gentleness you would give someone you love most.</p>
+    </div>
+  </div>
+
+  <!-- ======= MEALS ======= -->
+  <div class="section" id="sec-meals">
+    <div class="sec-title">Daily Meal Plans</div>
+    <div class="sec-sub">Nigeria-based · Affordable · PCOS-friendly · Daily cost included</div>
+
+    <div class="meal-day">
+      <div class="meal-day-header" onclick="toggleMeal(this)">
+        <span>Monday — Reset Day</span><span>₦900–1,100 ▾</span>
+      </div>
+      <div class="meal-day-body">
+        <div class="meal-slot"><div class="meal-slot-title">Breakfast</div><p>2 boiled eggs + 1 cup ogi/akamu made with soybeans milk (no sugar). Water with lemon.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>Small handful of groundnuts + 1 cup warm cinnamon-ginger tea.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Lunch</div><p>Beans (ewa) + small boiled plantain + ugwu soup with stockfish or mackerel.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>Cucumber slices or banana.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Dinner</div><p>Small portion ofada rice + vegetable stew + 1 piece grilled fish (titus).</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Bedtime</div><p>Warm ginger + cinnamon tea. No sugar.</p></div>
+        <div class="meal-cost">Est. daily cost: ₦900–1,100</div>
+      </div>
+    </div>
+
+    <div class="meal-day">
+      <div class="meal-day-header" onclick="toggleMeal(this)">
+        <span>Tuesday — Protein Power</span><span>₦800–1,000 ▾</span>
+      </div>
+      <div class="meal-day-body" style="display:none">
+        <div class="meal-slot"><div class="meal-slot-title">Breakfast</div><p>Egg omelette (2 eggs, onions, tomato) + 1 small sweet potato boiled.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>Soybeans milk (homemade or bought) + 1 banana.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Lunch</div><p>Egusi soup with ugwu + small portion of pounded yam or fufu (half normal size).</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>Groundnuts + lemon water.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Dinner</div><p>Pepper soup with goat meat or chicken (light, healing broth).</p></div>
+        <div class="meal-cost">Est. daily cost: ₦800–1,000</div>
+      </div>
+    </div>
+
+    <div class="meal-day">
+      <div class="meal-day-header" onclick="toggleMeal(this)">
+        <span>Wednesday — Green Day</span><span>₦700–900 ▾</span>
+      </div>
+      <div class="meal-day-body" style="display:none">
+        <div class="meal-slot"><div class="meal-slot-title">Breakfast</div><p>Oats cooked with water + moringa powder added + groundnuts stirred in. 1 boiled egg on the side.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>Avocado half + lemon squeeze + small portion of ofada rice.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Lunch</div><p>Edikaikong or afang soup (very green, very nutritious) + small swallow.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>Moringa tea or zobo (unsweetened).</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Dinner</div><p>Vegetable stir-fry (ugwu, carrot, onion, tomato) + 2 boiled eggs.</p></div>
+        <div class="meal-cost">Est. daily cost: ₦700–900</div>
+      </div>
+    </div>
+
+    <div class="meal-day">
+      <div class="meal-day-header" onclick="toggleMeal(this)">
+        <span>Thursday — Comfort Day</span><span>₦800–1,000 ▾</span>
+      </div>
+      <div class="meal-day-body" style="display:none">
+        <div class="meal-slot"><div class="meal-slot-title">Breakfast</div><p>Bean cake (akara) × 3 + custard made with milk and no sugar (or little honey).</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>Fresh pawpaw (papaya) — natural enzymes and vitamin C.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Lunch</div><p>Jollof rice (brown rice/ofada version) + grilled chicken + side salad with cucumber and tomato.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>Tiger nuts and water (ase + water). Prebiotic and hormone-balancing.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Dinner</div><p>Light ofe onugbu (bitter leaf soup) + small fufu.</p></div>
+        <div class="meal-cost">Est. daily cost: ₦800–1,000</div>
+      </div>
+    </div>
+
+    <div class="meal-day">
+      <div class="meal-day-header" onclick="toggleMeal(this)">
+        <span>Friday — Skin Glow Day</span><span>₦900–1,200 ▾</span>
+      </div>
+      <div class="meal-day-body" style="display:none">
+        <div class="meal-slot"><div class="meal-slot-title">Breakfast</div><p>Smoothie: banana + pawpaw + ginger + water (blend if you have a blender) OR 2 boiled eggs + fruit.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>1 avocado with a squeeze of lemon + water.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Lunch</div><p>Catfish pepper soup + boiled yam. Collagen-rich, skin-building meal.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>Groundnuts + zobo (unsweetened).</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Dinner</div><p>Oatmeal with milk, cinnamon, banana slices. Light and hormone-supportive.</p></div>
+        <div class="meal-cost">Est. daily cost: ₦900–1,200</div>
+      </div>
+    </div>
+
+    <div class="meal-day">
+      <div class="meal-day-header" onclick="toggleMeal(this)">
+        <span>Saturday — Treat Day (still healthy)</span><span>₦1,000–1,400 ▾</span>
+      </div>
+      <div class="meal-day-body" style="display:none">
+        <div class="meal-slot"><div class="meal-slot-title">Breakfast</div><p>French toast (2 slices whole wheat bread, 1 egg, cinnamon) + fruit.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Lunch</div><p>Chicken or fish suya + vegetables + side of plantain.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Treat</div><p>1 small portion of puff puff OR 2 small chin chin. Enjoy without guilt — balance is everything.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Dinner</div><p>Light vegetable soup + 1 egg + small swallow.</p></div>
+        <div class="meal-cost">Est. daily cost: ₦1,000–1,400</div>
+      </div>
+    </div>
+
+    <div class="meal-day">
+      <div class="meal-day-header" onclick="toggleMeal(this)">
+        <span>Sunday — Soul Food Day</span><span>₦800–1,000 ▾</span>
+      </div>
+      <div class="meal-day-body" style="display:none">
+        <div class="meal-slot"><div class="meal-slot-title">Breakfast</div><p>Slow-cooked oats with ginger, cinnamon, coconut oil + black tea.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Lunch</div><p>Sunday stew rice (ofada or parboiled) + chicken + vegetable salad.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Snack</div><p>Eko + groundnut soup — traditional and deeply nourishing.</p></div>
+        <div class="meal-slot"><div class="meal-slot-title">Dinner</div><p>Yam porridge (asaro) with fish + ugwu on the side. Comfort and nutrition.</p></div>
+        <div class="meal-cost">Est. daily cost: ₦800–1,000</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-tag gold">Monthly Cost</div>
+      <h3>Weekly & Monthly Estimate</h3>
+      <ul>
+        <li>Average daily food cost: <strong>₦800–1,100</strong></li>
+        <li>Weekly total: <strong>₦5,600–7,700</strong></li>
+        <li>Monthly total: <strong>₦22,000–32,000</strong></li>
+        <li>These are ingredient costs — home cooking saves significantly vs buying out</li>
+        <li>Buy in bulk: beans, oats, groundnuts — saves 30–40%</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ======= TRACKER ======= -->
+  <div class="section" id="sec-tracker">
+    <div class="sec-title">Consistency Tracker</div>
+    <div class="sec-sub">Your visual proof that you showed up</div>
+    <div id="calendarOutput"></div>
+  </div>
+
+  <!-- ======= JOURNAL ======= -->
+  <div class="section" id="sec-journal">
+    <div class="sec-title">My Journal</div>
+    <div class="sec-sub">Your private space — write, feel, release, grow</div>
+
+    <div class="journal-area">
+      <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;" id="journalDateLabel">Loading...</div>
+      <div class="journal-prompts">
+        <button class="prompt-chip" onclick="setPrompt('Today I am grateful for...')">Gratitude</button>
+        <button class="prompt-chip" onclick="setPrompt('My body is healing and today I noticed...')">Body love</button>
+        <button class="prompt-chip" onclick="setPrompt('I am releasing... and calling in...')">Release</button>
+        <button class="prompt-chip" onclick="setPrompt('The woman I am becoming will...')">Future self</button>
+        <button class="prompt-chip" onclick="setPrompt('I feel creative when...')">Creativity</button>
+        <button class="prompt-chip" onclick="setPrompt('Something I am proud of today is...')">Pride</button>
+        <button class="prompt-chip" onclick="setPrompt('A message to my past self: ')">Past self</button>
+        <button class="prompt-chip" onclick="setPrompt('My zodiac sign tells me to trust... and today I...')">Zodiac</button>
+      </div>
+      <textarea class="journal-textarea" id="journalTA" placeholder="Write here... this is your private space."></textarea>
+      <button class="save-btn" onclick="saveJournal()">✦ Save Entry</button>
+    </div>
+
+    <div id="journalEntriesContainer">
+      <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text2);margin-bottom:12px;">Past Entries</div>
+      <div id="journalList"></div>
+    </div>
+  </div>
+
+</div><!-- end app -->
+
+<!-- ======= MODALS ======= -->
+<!-- Tip Modal -->
+<div class="modal-overlay hidden" id="tipModal">
+  <div class="modal-box">
+    <h3 id="tipTitle">Tip</h3>
+    <div id="tipContent"></div>
+    <button class="modal-close" onclick="closeTip()">Got it ✓</button>
+  </div>
+</div>
+
+<!-- Daily Check-in Modal -->
+<div class="checkin-modal hidden" id="checkinModal">
+  <div class="checkin-box">
+    <h3>Daily Check-in ✦</h3>
+    <p>How are you feeling today? Your plan will adapt to support you.</p>
+    <div class="feeling-grid" id="checkinFeelings">
+      <div class="feeling-opt" onclick="selectCheckin(this,'thriving')"><span class="emoji">🔥</span><span class="label">Thriving</span></div>
+      <div class="feeling-opt" onclick="selectCheckin(this,'good')"><span class="emoji">😊</span><span class="label">Good</span></div>
+      <div class="feeling-opt" onclick="selectCheckin(this,'okay')"><span class="emoji">😐</span><span class="label">Okay</span></div>
+      <div class="feeling-opt" onclick="selectCheckin(this,'tired')"><span class="emoji">😴</span><span class="label">Tired</span></div>
+      <div class="feeling-opt" onclick="selectCheckin(this,'low')"><span class="emoji">😔</span><span class="label">Low</span></div>
+      <div class="feeling-opt" onclick="selectCheckin(this,'pain')"><span class="emoji">💔</span><span class="label">In Pain</span></div>
+    </div>
+    <textarea class="checkin-textarea" id="checkinText" placeholder="Anything specific happening? (optional) — Has anything improved that you'd like to update your plan for?"></textarea>
+    <button class="checkin-submit" onclick="submitCheckin()">Update My Day ✦</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">Saved!</div>
+
+<!-- Scroll to top -->
+<button class="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ============================================
+// DATA & CONSTANTS
+// ============================================
+const TODAY = new Date();
+const TODAY_STR = TODAY.toISOString().split('T')[0];
+const START = new Date('2024-04-04');
+const END = new Date('2024-12-31');
+
+const AFFIRMATIONS = [
+  "I am not behind. I am exactly where my healing begins.",
+  "My body is sacred ground — it is healing, blooming, becoming.",
+  "Every consistent day is an act of devotion to myself.",
+  "I carry grief and hope in the same hands. Both are real.",
+  "My skin, my curves, my mind — all of me deserves care.",
+  "I am building a life that loves me back.",
+  "I am creative. I am intelligent. I am magnetic.",
+  "My womb has known loss and it holds life. It is still holy.",
+  "I choose myself every single day. That is enough.",
+  "The love I seek is also seeking me.",
+  "I am not rushing. I am ripening.",
+  "My consistency is quietly building something extraordinary.",
+  "I honour every imperfect step forward.",
+  "I am the woman I have been waiting for.",
+  "Healing is not linear — and I am healing anyway."
+];
+
+const ZODIAC_SOUL = {
+  '♈ Aries': "Aries, your fire is your healing. Channel that boldness into your habits. You do not need permission to take up space. Your body, your rules.",
+  '♉ Taurus': "Taurus, your greatest healing comes through consistency and sensory pleasure. Build beautiful rituals. Your body responds to care like a garden to water.",
+  '♊ Gemini': "Gemini, your mind is your greatest gift. Feed it. Write daily — your words carry healing power. Stillness will be your deepest work.",
+  '♋ Cancer': "Cancer, you feel deeply — that is a superpower. Your womb and emotions are connected. Nurture yourself the way you nurture others.",
+  '♌ Leo': "Leo, you are meant to shine. Your confidence is your medicine. Celebrate small wins loudly. You deserve to take up space in every room.",
+  '♍ Virgo': "Virgo, your healing is in the details — the routine, the discipline, the consistency. Trust the process. Your body hears every small effort.",
+  '♎ Libra': "Libra, balance is your healing language. Beauty, harmony, and peace nourish your soul. Make your healing rituals beautiful — you will do them more.",
+  '♏ Scorpio': "Scorpio, you heal in the depths. Journaling, shadow work, and releasing what no longer serves you — these are your medicines.",
+  '♐ Sagittarius': "Sagittarius, freedom heals you. Movement — running, dancing, walking — is your therapy. Keep learning. Your mind grows with your body.",
+  '♑ Capricorn': "Capricorn, your strength is in structure. Build your healing plan like a project. Track your wins. You will be consistent because you are built for it.",
+  '♒ Aquarius': "Aquarius, you heal by connecting to purpose. Ask why you want to be well — for yourself, and for what you will create. Community nourishes you.",
+  '♓ Pisces': "Pisces, you heal through surrender — to rest, to prayer, to feeling fully. Art, music, and journaling are your medicines. Trust what you feel."
+};
+
+const TIPS = {
+  'warm-water': { title: 'Why Warm Water First Thing', body: 'Warm water on an empty stomach activates the lymphatic system, aids bowel movement, flushes overnight toxins, and prepares your stomach lining for food. Cold water constricts; warm water opens. It costs nothing and the benefits compound over months.' },
+  'morning-skin': { title: 'Morning Skincare Step-by-Step', body: '<ul><li>1. Splash cold water on face × 3</li><li>2. Mix 1 tsp lemon juice + 3 tsp water → apply with cotton wool, leave 30 secs</li><li>3. Take a small amount of shea butter, warm it between palms</li><li>4. Press gently onto face and neck</li><li>5. If going outside, add sunscreen on top</li></ul>Total time: 3 minutes.' },
+  'pcos-run': { title: 'PCOS and Running', body: 'YES — running is beneficial for PCOS. It improves insulin sensitivity (the root cause of most PCOS symptoms), reduces androgens, improves mood, and helps with weight management. Key rules: keep intensity moderate (you should be able to speak in short sentences), do NOT run on empty stomach, stay under 45 mins to avoid cortisol spike, rest 2 days per week. Start with walk/run intervals.' },
+  'protein-break': { title: 'Why Protein at Breakfast', body: 'PCOS is driven by insulin resistance. Eating protein in the morning stabilises blood sugar for the entire day, reduces cravings, lowers insulin spikes, and balances cortisol. Studies show women with PCOS who eat high-protein breakfasts have significantly lower testosterone levels over time.' },
+  'mirror-aff': { title: 'How to Do Mirror Affirmations', body: 'Stand close to a mirror. Look directly into your own eyes — not at your body, INTO your eyes. Say 3 things slowly and clearly: something you love, something you are becoming, something you are grateful your body does. It will feel awkward at first. That awkwardness is the work. Do it for 30 days consistently.' },
+  'cinn-tea': { title: 'Cinnamon-Ginger Tea Recipe', body: 'Boil 2 cups water. Add: 1 cinnamon stick (or ½ tsp powder) + 3 slices fresh ginger (or ¼ tsp powder). Simmer 5 mins. Pour, let cool slightly, add squeeze of lemon. NO sugar. Drink 1 cup in morning. Cinnamon regulates insulin. Ginger reduces PCOS inflammation. Together they are powerful.' },
+  'workout-tip': { title: 'Today\'s Workout Guide', body: 'If doing glutes: Hip thrusts (4×15) + Glute bridges (3×20) + Donkey kicks (3×20). Rest 60 secs between sets. If doing waist: Russian twists (3×20) + Bicycle crunches (3×30) + Vacuum hold (5×30secs). Always warm up 3 mins with light movement. Cool down with stretching.' },
+  'shea-massage': { title: 'Shea Butter Massage Technique', body: 'Warm a small amount of shea butter by rubbing between palms until liquid. Apply to dark areas (inner thighs, knuckles, underarms). Use circular motions with medium pressure for 3–5 mins. The friction increases blood flow. Do this after shower when skin is slightly damp for better absorption. Consistency over 6–8 weeks shows visible results.' },
+  'night-skin': { title: 'Full Night Skincare Routine', body: '<ul><li>1. Oil cleanse: massage coconut/shea oil on DRY face 60 secs, rinse with warm water</li><li>2. Black soap: lather, gentle massage 30 secs, rinse</li><li>3. Neem toner: boil neem leaves in water, cool, strain into bottle, apply with cotton</li><li>4. Night cream: squeeze 1 vitamin E capsule into pea-size shea butter, mix on palm, press onto face</li><li>5. Sleep on CLEAN pillowcase (change every 3 days)</li></ul>' },
+  'dark-thigh': { title: 'Dark Thigh Treatment Options', body: '<b>Option 1 — Potato:</b> Cut raw potato, rub cut side directly on dark areas for 10 mins daily. Contains kojic acid — a natural skin lightener.<br><br><b>Option 2 — Lemon & Honey:</b> Mix 1 tsp honey + ½ tsp lemon. Apply 15 mins, rinse. 3× weekly. Do NOT go in sun after lemon.<br><br><b>Option 3 — Turmeric Paste:</b> ½ tsp turmeric + 1 tsp coconut oil. Apply 15 mins, rinse. Anti-inflammatory, gradually brightens.<br><br>Combine with daily shea butter massage and avoid tight synthetic underwear.' },
+  'no-phone': { title: 'Why No Phone Before Bed', body: 'Blue light from screens suppresses melatonin production by up to 50%. Melatonin is not just a sleep hormone — it is a powerful antioxidant and regulates reproductive hormones. Poor sleep raises cortisol, which worsens PCOS, acne, weight gain, and anxiety. 30 mins of screen-free time before bed improves sleep quality significantly.' },
+  'cold-rinse': { title: 'Why Cold Water in the Morning', body: 'Hot water strips the skin\'s natural protective oil barrier. Cold water tightens pores, reduces puffiness, improves circulation, and keeps sebum production balanced. This is why your skin glows after a cold splash — circulation rushes to the surface. You only need soap (black soap) at night when removing the day\'s dirt.' },
+  'lemon-toner': { title: 'DIY Lemon Toner Instructions', body: 'Mix in a small clean bottle: 1 part fresh lemon juice + 3 parts clean water. Apply with cotton pad morning and evening (or just morning if your skin is sensitive). Lemon contains vitamin C and citric acid that fade dark spots. ALWAYS dilute — never apply pure lemon to face. Never go in sun right after application. Store in fridge, use within 3 days.' },
+  'shea-apply': { title: 'How to Apply Shea Butter Right', body: 'The most common mistake is applying too much — a pea-sized amount is enough for your whole face. Warm it between your palms first until it melts slightly. Then PRESS it into your face rather than rubbing. This prevents pilling and ensures absorption. Apply to slightly damp skin for even better results.' },
+  'oil-cleanse': { title: 'The Oil Cleansing Method', body: 'Oil dissolves oil — this is chemistry. Apply coconut or shea oil to your DRY face (no water first). Massage in circles for 60 seconds. This breaks down makeup, sunscreen, and excess sebum. Then wet your hands and emulsify (massage until it turns milky), then rinse off. Follow with black soap second cleanse. Your skin will not feel greasy.' },
+  'black-soap': { title: 'African Black Soap Benefits', body: 'Real African black soap (ose dudu) contains plantain ash, shea butter, palm kernel oil, and cocoa pod. It is anti-bacterial (fights acne), naturally exfoliating, brightening, and anti-fungal. Key: lather in your hands first, NEVER apply the raw bar directly to face — it can be too harsh. Always moisturise right after.' },
+  'neem-toner': { title: 'How to Make Neem Toner', body: 'Pick a handful of fresh neem leaves (they grow everywhere in Nigeria). Boil in 2 cups of water for 10 mins. Let cool completely. Strain through a cloth into a clean bottle. Store in fridge for up to 5 days. Apply with cotton ball as toner. Neem is anti-bacterial, anti-fungal, reduces acne, and gradually brightens skin.' },
+  'vit-e-night': { title: 'Vitamin E Night Cream Benefits', body: 'Vitamin E (tocopherol) is a fat-soluble antioxidant that repairs UV damage, fades dark spots, boosts collagen, and heals skin barrier damage. Combining it with shea butter makes a powerful night cream. While you sleep, your skin is in repair mode — vitamin E amplifies this. Buy 400IU capsules at any pharmacy (₦500/pack).' },
+  'honey-mask': { title: 'Raw Honey Face Mask', body: 'Apply raw (unheated) honey to clean face. Leave 10–15 mins. Rinse with warm water. Do 2–3× weekly. Honey is antibacterial (kills acne bacteria), humectant (draws moisture into skin), enzyme-rich (gentle exfoliant), and anti-inflammatory. Use ONLY raw/natural honey — processed honey lacks live enzymes.' },
+  'papaya-scrub': { title: 'Papaya + Oat Scrub Recipe', body: 'Mash 2 tablespoons of ripe pawpaw (papaya). Add 1 tablespoon of ground oats. Mix to a paste. Apply to face and body in gentle circular motions. Leave 10 mins, rinse off. Papaya contains papain — a natural enzyme that dissolves dead skin cells. Oats soothe and calm. Use 2× weekly.' },
+  'potato-dark': { title: 'Potato for Dark Spots', body: 'Raw potato contains azelaic acid and kojic acid — both proven skin lighteners used in pharmaceutical products. Slice a raw potato, rub the cut side directly onto dark inner thighs, dark knuckles, or dark underarms. Leave the juice to dry (10 mins), then rinse. Use daily. Results visible in 6–8 weeks.' },
+  'turmeric-paste': { title: 'Turmeric Brightening Paste', body: 'Mix: ½ teaspoon turmeric powder + 1 teaspoon coconut oil. Apply to dark areas. Leave 15 mins. Rinse with warm water. Note: turmeric WILL stain — use a dark towel to pat dry, and wash off thoroughly. Anti-inflammatory, anti-bacterial, and gradually brightens. Use 3× weekly.' },
+  'lemon-honey': { title: 'Lemon + Honey Mask Safety', body: 'Mix: 1 tsp raw honey + ½ tsp fresh lemon juice. Apply to dark spots and hyperpigmented areas. Leave 10–15 mins. Rinse thoroughly. IMPORTANT: Never go outdoors in direct sunlight within 2 hours of applying lemon to skin. The citric acid makes skin photosensitive. Do this at night or stay indoors after.' },
+  'face-steam': { title: 'How to Steam Your Face Safely', body: 'Boil water. Add neem leaves or ginger. Pour into a bowl. Drape a towel over your head and lean over the bowl (30cm distance — not too close!). Steam for 5 mins. Then immediately do cold water splash to close pores. Steam opens pores so products absorb better afterwards. Do 1× weekly maximum.' },
+  'hip-thrust': { title: 'Hip Thrust Setup at Home', body: 'Sit on the floor with your upper back against a sturdy couch or bed edge. Feet flat on floor, hip-width apart. Place a bag of beans/rice across your hips as weight. Brace your core, then push hips upward until your body forms a straight line from knees to shoulders. SQUEEZE your glutes hard at the top for 1–2 seconds. Lower slowly. The slow lowering = more growth.' },
+  'vacuum-ex': { title: 'Stomach Vacuum Exercise', body: 'This is the most underrated waist exercise. Do it on an empty stomach every morning. Stand or sit tall. Exhale ALL the air from your lungs completely. Then suck your stomach in as far as possible toward your spine — like trying to touch your belly button to your back. Hold 20–30 secs. Breathe shallowly. Release. This trains the transverse abdominis — the deepest core muscle that cinches your waist.' },
+  'pcos-ex': { title: 'Best Exercises for PCOS', body: '<b>Best choices:</b> Walking (daily, 20-30 mins), strength training (3× week), swimming, cycling, light running/jogging.<br><br><b>Avoid:</b> Excessive HIIT (more than 3× week), very long cardio sessions (over 60 mins), working out when exhausted — all raise cortisol.<br><br>The goal is to improve insulin sensitivity, not exhaust yourself. Moderate, consistent > intense, sporadic.' },
+  'spearmint': { title: 'Spearmint Tea for PCOS', body: 'Spearmint tea has been studied in clinical trials and found to reduce free testosterone levels in women with PCOS by up to 30% when drunk twice daily. It works by having anti-androgenic properties. Buy dried spearmint leaves at any herb market. Steep 1 tsp in hot water for 5 mins. Drink 1–2 cups daily.' },
+  'cinn-pcos': { title: 'Cinnamon and PCOS', body: 'Cinnamon improves insulin sensitivity by making cells more responsive to insulin. Since PCOS is fundamentally an insulin resistance condition, cinnamon attacks the root cause. Use Ceylon cinnamon (true cinnamon) if possible — it is safer for daily use than Cassia cinnamon. ½ tsp daily in tea, oats, or food.' },
+  'stress-pcos': { title: 'Cortisol and PCOS', body: 'Cortisol (stress hormone) directly suppresses progesterone and disrupts the LH/FSH ratio — causing missed periods, more facial hair, and weight gain. Every stressful day literally worsens PCOS. This is why rest, prayer, journaling, and walking in nature are NOT optional extras — they are medical interventions for PCOS.' },
+  'castor-pack': { title: 'How to Do a Castor Oil Pack', body: 'Soak a cloth/flannel in pure castor oil. Lie down. Place the cloth on your lower abdomen. Cover with a dry towel or plastic wrap. Apply a warm water bottle on top (not too hot). Relax for 30–45 mins. Do 2–3× weekly. This increases circulation in the pelvis, supports lymphatic drainage, and may reduce cysts over time. Always shower the oil off afterwards.' },
+  'folate': { title: 'Folate, Fertility & PCOS', body: 'Folate (vitamin B9) is essential for egg quality, DNA repair, and early fetal development. Women with PCOS often have higher folate needs. Get it from food: ugwu (very high), eggs, beans, avocado, groundnuts. If you are trying to conceive, speak to a doctor about folic acid supplements (₦300–500 at pharmacies).' },
+  'protein-pcos': { title: 'Protein and PCOS', body: 'Protein slows glucose absorption, meaning less insulin spike after eating. It also increases satiety (you stay full longer) and supports muscle building which improves metabolic rate. Women with PCOS who eat high-protein diets have lower androgen levels, more regular periods, and better weight management.' },
+  'sugar-pcos': { title: 'Sugar and PCOS', body: 'Sugar causes rapid insulin spikes. High insulin signals the ovaries to produce more testosterone. High testosterone causes: missed periods, cysts, acne, facial hair, weight gain — all classic PCOS symptoms. Cutting sugar is THE most powerful single dietary change for PCOS. Replace with natural sweetness: dates, banana, honey in small amounts.' },
+  'healthy-fat': { title: 'Why Fat is Essential for Hormones', body: 'Hormones are literally made from cholesterol and fat. Estrogen, progesterone, testosterone — all are steroid hormones made from fat. A low-fat diet = hormone deficiency. Eat avocado, eggs, groundnuts, coconut oil, fatty fish daily. Women on low-fat diets have lower progesterone, more PCOS symptoms, and more fertility issues.' },
+  'flutter-kegel': { title: 'Types of Kegel Exercises', body: '<b>Slow Kegels:</b> Squeeze, hold 5–10 seconds, release slowly. Trains Type 1 (endurance) muscle fibres. Best for overall tightening and bladder control.<br><br><b>Fast/Flutter Kegels:</b> Rapid squeeze-release, squeeze-release. Trains Type 2 (fast-twitch) fibres. Better for sensation and responsiveness.<br><br>Do both types daily for best results — 10 slow + 10 fast = 1 complete set.' },
+  'yoni-steam': { title: 'Yoni Steam — Safe Guide', body: 'Boil water with: neem leaves + ginger + rosemary (any combination). Pour into a bowl in the toilet. Undress from waist down. Sit on the toilet over the bowl (test steam first — should be warm, never burning). Steam for 10–20 mins. Wrap a towel around your waist to hold steam in. Do 1× weekly. Supports womb health, reduces cramps, and feels deeply healing. Do NOT do during period or if pregnant.' },
+  'squat-pelvic': { title: 'Squats and Pelvic Floor', body: 'Deep squats (where thighs go below parallel) are nature\'s kegel. They naturally stretch and strengthen the pelvic floor in its full range of motion. Shallow squats do not have this effect. When squatting, keep feet slightly turned out, go as low as you can, and squeeze pelvic floor as you come back up.' },
+  'breathing-tip': { title: 'Simple 4-7-8 Breathing', body: 'This activates your parasympathetic (rest) nervous system within 30 seconds. Breathe IN through nose for 4 counts. HOLD for 7 counts. Breathe OUT through mouth slowly for 8 counts. Repeat 4 times. This reduces cortisol, slows heart rate, and moves your body out of stress mode. Do before sleep, after stressful situations, or during anxiety.' },
+  'no-social': { title: 'Protecting Your Morning Brain', body: 'The first 60–90 mins of your day set your mental tone. Checking social media immediately puts your brain in reactive mode (responding to other people\'s content) instead of creative/intentional mode. Research shows people who avoid screens for the first hour are more focused, less anxious, and more productive all day. Use that time for your rituals.' },
+  'creative-tip': { title: 'Daily Creativity Ideas', body: '<ul><li>Sketch or doodle — even stick figures count</li><li>Style an outfit differently</li><li>Cook a familiar meal with one new ingredient</li><li>Take one intentional beautiful photo</li><li>Write the first sentence of a story</li><li>Rearrange one corner of your room</li><li>Make a mood board on paper</li><li>Hum or sing something you made up</li></ul>Creativity is not talent — it is a habit of noticing and making.' }
+};
+
+// ============================================
+// ONBOARDING
+// ============================================
+let obSelections = { zodiac:'', feeling:'', location:'Nigeria', goals:[], conditions:[] };
+
+function selectOb(el, type, val) {
+  const parent = el.closest('[id^="ob-"]');
+  if (parent) parent.querySelectorAll('.ob-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  if (type === 'zodiac') obSelections.zodiac = val;
+  if (type === 'feeling') obSelections.feeling = val;
+  if (type === 'location') obSelections.location = val;
+}
+
+function toggleGoal(el, val) {
+  el.classList.toggle('selected');
+  const arr = val.endsWith('-c') ? obSelections.conditions : obSelections.goals;
+  const idx = arr.indexOf(val);
+  if (idx === -1) arr.push(val); else arr.splice(idx, 1);
+}
+
+function completeOnboarding() {
+  const name = document.getElementById('ob-name').value.trim() || 'Healer';
+  const feelingText = document.getElementById('ob-feeling-text').value.trim();
+  const profile = {
+    name, zodiac: obSelections.zodiac || '✦ Seeker',
+    feeling: obSelections.feeling, feelingText,
+    location: obSelections.location,
+    goals: obSelections.goals, conditions: obSelections.conditions,
+    startDate: TODAY_STR
+  };
+  localStorage.setItem('omie_profile', JSON.stringify(profile));
+  document.getElementById('onboarding').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+  initApp();
+}
+
+function resetOnboarding() {
+  if (confirm('Edit your profile? This will take you back to the setup screen.')) {
+    document.getElementById('onboarding').classList.remove('hidden');
+    document.getElementById('app').classList.remove('visible');
+  }
+}
+
+// ============================================
+// APP INIT
+// ============================================
+function initApp() {
+  const profile = JSON.parse(localStorage.getItem('omie_profile') || '{}');
+
+  // Name
+  document.getElementById('heroName').textContent = profile.name || 'Healer';
+
+  // Date
+  const dateStr = TODAY.toLocaleDateString('en-NG', { weekday:'long', day:'numeric', month:'long' });
+  document.getElementById('heroDate').textContent = dateStr;
+  document.getElementById('journalDateLabel').textContent = dateStr.toUpperCase();
+
+  // Zodiac
+  const zodiac = profile.zodiac || '✦';
+  document.getElementById('zodiacSign').textContent = zodiac.split(' ')[0];
+  document.getElementById('zodiacName').textContent = zodiac.split(' ').slice(1).join(' ');
+  document.getElementById('zodiacSoulTitle').textContent = zodiac + ' — Your Healing Path';
+  document.getElementById('zodiacSoulText').textContent = ZODIAC_SOUL[zodiac] || 'Every sign carries healing wisdom. Trust the season you are in.';
+
+  // Affirmation
+  document.getElementById('affirmText').textContent = AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)];
+
+  // Journey progress
+  const total = END - START;
+  const elapsed = Math.min(Math.max(TODAY - START, 0), total);
+  const pct = Math.round((elapsed / total) * 100);
+  document.getElementById('jpPct').textContent = pct + '%';
+  document.getElementById('jpFill').style.width = pct + '%';
+  const dayNum = Math.ceil(elapsed / (1000*60*60*24));
+  const daysLeft = Math.ceil((END - TODAY) / (1000*60*60*24));
+  document.getElementById('jpDay').textContent = `Day ${dayNum} of 272`;
+  document.getElementById('jpLeft').textContent = `${Math.max(0,daysLeft)} days left`;
+
+  // Stats
+  loadChecksUI();
+  loadStreakUI();
+  buildCalendar();
+  loadJournalUI();
+
+  // Total days streak
+  const completed = JSON.parse(localStorage.getItem('omie_completed') || '[]');
+  document.getElementById('statTotal').textContent = completed.length;
+
+  // Check-in prompt
+  const lastCheckin = localStorage.getItem('omie_last_checkin');
+  if (lastCheckin !== TODAY_STR) {
+    setTimeout(() => openCheckin(), 1500);
+  }
+}
+
+function nextAffirmation() {
+  const el = document.getElementById('affirmText');
+  el.style.opacity = 0;
+  setTimeout(() => {
+    el.textContent = AFFIRMATIONS[Math.floor(Math.random() * AFFIRMATIONS.length)];
+    el.style.opacity = 1;
+  }, 200);
+}
+
+// ============================================
+// TABS
+// ============================================
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const sec = document.getElementById('sec-' + id);
+  if (sec) sec.classList.add('active');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ============================================
+// CHECKLIST
+// ============================================
+const CHECKS_KEY = 'omie_checks_' + TODAY_STR;
+
+function loadChecksUI() {
+  const saved = JSON.parse(localStorage.getItem(CHECKS_KEY) || '{}');
+  document.querySelectorAll('.check-item[onclick*="toggle"]').forEach(item => {
+    const id = item.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+    if (id && saved[id]) item.classList.add('done');
+  });
+  updateRing();
+}
+
+function toggle(el, id) {
+  el.classList.toggle('done');
+  const saved = JSON.parse(localStorage.getItem(CHECKS_KEY) || '{}');
+  saved[id] = el.classList.contains('done');
+  localStorage.setItem(CHECKS_KEY, JSON.stringify(saved));
+  updateRing();
+  checkStreakUpdate();
+}
+
+function resetToday() {
+  if (!confirm('Reset today\'s checklist?')) return;
+  document.querySelectorAll('.check-item.done').forEach(i => i.classList.remove('done'));
+  localStorage.removeItem(CHECKS_KEY);
+  updateRing();
+}
+
+function updateRing() {
+  const all = document.querySelectorAll('#sec-today .check-item');
+  const done = document.querySelectorAll('#sec-today .check-item.done');
+  const total = all.length;
+  const doneN = done.length;
+  const pct = total ? Math.round((doneN / total) * 100) : 0;
+
+  document.getElementById('ringPct').textContent = pct + '%';
+  document.getElementById('ringDone').textContent = doneN;
+  document.getElementById('ringTotal').textContent = total;
+  document.getElementById('statDone').textContent = doneN;
+
+  const circumference = 264;
+  const offset = circumference - (pct / 100) * circumference;
+  document.getElementById('ringCircle').style.strokeDashoffset = offset;
+}
+
+// ============================================
+// STREAK
+// ============================================
+function checkStreakUpdate() {
+  const saved = JSON.parse(localStorage.getItem(CHECKS_KEY) || '{}');
+  const doneCount = Object.values(saved).filter(Boolean).length;
+  const all = document.querySelectorAll('#sec-today .check-item').length;
+  if (doneCount >= Math.floor(all * 0.5)) {
+    const completed = JSON.parse(localStorage.getItem('omie_completed') || '[]');
+    if (!completed.includes(TODAY_STR)) {
+      completed.push(TODAY_STR);
+      localStorage.setItem('omie_completed', JSON.stringify(completed));
+      loadStreakUI();
+      showToast('🔥 Day marked complete!');
+    }
+  }
+}
+
+function loadStreakUI() {
+  const completed = JSON.parse(localStorage.getItem('omie_completed') || '[]');
+  let streak = 0;
+  const d = new Date(TODAY);
+  while (true) {
+    const key = d.toISOString().split('T')[0];
+    if (completed.includes(key)) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+  }
+  document.getElementById('statStreak').textContent = streak;
+  document.getElementById('statTotal').textContent = completed.length;
+}
+
+// ============================================
+// CALENDAR
+// ============================================
+function buildCalendar() {
+  const completed = JSON.parse(localStorage.getItem('omie_completed') || '[]');
+  const container = document.getElementById('calendarOutput');
+  container.innerHTML = '';
+
+  const months = [];
+  let d = new Date(2024, 3, 1);
+  while (d <= new Date(2024, 11, 31)) {
+    months.push(new Date(d)); d.setMonth(d.getMonth() + 1);
+  }
+
+  months.forEach(ms => {
+    const name = ms.toLocaleDateString('en', { month: 'long', year: 'numeric' });
+    const el = document.createElement('div');
+    el.className = 'cal-month';
+    let html = `<div class="cal-month-name">${name}</div>`;
+    html += `<div class="cal-labels">${['Su','Mo','Tu','We','Th','Fr','Sa'].map(l => `<div class="cal-label">${l}</div>`).join('')}</div>`;
+    html += `<div class="cal-grid">`;
+    for (let i = 0; i < ms.getDay(); i++) html += `<div class="cal-day empty"></div>`;
+    const days = new Date(ms.getFullYear(), ms.getMonth() + 1, 0).getDate();
+    for (let day = 1; day <= days; day++) {
+      const dt = new Date(ms.getFullYear(), ms.getMonth(), day);
+      const ds = dt.toISOString().split('T')[0];
+      const isToday = ds === TODAY_STR;
+      const isDone = completed.includes(ds);
+      const cls = isToday ? 'today' : isDone ? 'done' : '';
+      html += `<div class="cal-day ${cls}">${day}</div>`;
+    }
+    html += `</div>`;
+    el.innerHTML = html;
+    container.appendChild(el);
+  });
+}
+
+// ============================================
+// JOURNAL
+// ============================================
+function setPrompt(text) {
+  document.getElementById('journalTA').value = text;
+  document.getElementById('journalTA').focus();
+}
+
+function saveJournal() {
+  const text = document.getElementById('journalTA').value.trim();
+  if (!text) return;
+  const entries = JSON.parse(localStorage.getItem('omie_journal') || '[]');
+  entries.unshift({ date: TODAY.toISOString(), text });
+  localStorage.setItem('omie_journal', JSON.stringify(entries));
+  document.getElementById('journalTA').value = '';
+  loadJournalUI();
+  showToast('Journal saved ✦');
+}
+
+function loadJournalUI() {
+  const entries = JSON.parse(localStorage.getItem('omie_journal') || '[]');
+  const list = document.getElementById('journalList');
+  if (!entries.length) { list.innerHTML = '<p style="color:var(--text2);font-style:italic;padding:16px 0;font-size:13px;">Your entries will appear here...</p>'; return; }
+  list.innerHTML = entries.slice(0, 20).map(e => {
+    const d = new Date(e.date).toLocaleDateString('en-NG', { weekday:'short', day:'numeric', month:'short' });
+    return `<div class="saved-entry"><div class="entry-date">${d.toUpperCase()}</div><div class="entry-text">${e.text}</div></div>`;
+  }).join('');
+}
+
+// ============================================
+// TIPS MODAL
+// ============================================
+function showTip(e, key) {
+  e.stopPropagation();
+  const tip = TIPS[key];
+  if (!tip) return;
+  document.getElementById('tipTitle').textContent = tip.title;
+  document.getElementById('tipContent').innerHTML = `<p>${tip.body}</p>`;
+  document.getElementById('tipModal').classList.remove('hidden');
+}
+
+function closeTip() {
+  document.getElementById('tipModal').classList.add('hidden');
+}
+
+// ============================================
+// DAILY CHECK-IN
+// ============================================
+let checkinFeeling = '';
+
+function openCheckin() {
+  document.getElementById('checkinModal').classList.remove('hidden');
+}
+
+function selectCheckin(el, val) {
+  document.querySelectorAll('#checkinFeelings .feeling-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  checkinFeeling = val;
+}
+
+function submitCheckin() {
+  const text = document.getElementById('checkinText').value.trim();
+  const entry = { date: TODAY_STR, feeling: checkinFeeling, text };
+  const checkins = JSON.parse(localStorage.getItem('omie_checkins') || '[]');
+  checkins.unshift(entry);
+  localStorage.setItem('omie_checkins', JSON.stringify(checkins));
+  localStorage.setItem('omie_last_checkin', TODAY_STR);
+  document.getElementById('checkinModal').classList.add('hidden');
+  document.getElementById('checkinText').value = '';
+
+  // Personalise message based on feeling
+  let msg = '';
+  if (checkinFeeling === 'thriving') msg = "You\'re thriving — push your workout today! 🔥";
+  else if (checkinFeeling === 'tired') msg = "Rest is healing too. Do gentle yoga and kegels today. 💛";
+  else if (checkinFeeling === 'low' || checkinFeeling === 'pain') msg = "Be gentle with yourself today. Soul and journaling are your priority. 🌙";
+  else if (checkinFeeling === 'good') msg = "Good energy — it\'s a great day to be consistent! ✦";
+  else msg = "Showing up is enough. You\'re doing well. 💛";
+
+  if (msg) showToast(msg);
+}
+
+// ============================================
+// KEGEL TIMER
+// ============================================
+let kegelInterval = null;
+let kegelPhase = 'squeeze';
+let kegelCount = 5;
+let kegelRep = 0;
+
+function openKegel() {
+  showTab('pelvic', null);
+  document.getElementById('kegelTimer').scrollIntoView({ behavior: 'smooth' });
+}
+
+function startKegel() {
+  if (kegelInterval) return;
+  document.getElementById('kegelStartBtn').textContent = '⏸ Running...';
+  document.getElementById('kegelStartBtn').onclick = pauseKegel;
+  runKegel();
+}
+
+function runKegel() {
+  kegelInterval = setInterval(() => {
+    kegelCount--;
+    document.getElementById('kegelCount').textContent = kegelCount;
+    if (kegelCount <= 0) {
+      if (kegelPhase === 'squeeze') {
+        kegelPhase = 'release';
+        kegelCount = 5;
+        document.getElementById('kegelStatus').textContent = '😌 RELEASE — let go completely';
+        document.getElementById('kegelCount').style.color = 'var(--green)';
+      } else {
+        kegelRep++;
+        document.getElementById('kegelRep').textContent = kegelRep;
+        if (kegelRep >= 10) {
+          clearInterval(kegelInterval); kegelInterval = null;
+          document.getElementById('kegelStatus').textContent = '🎉 Session complete! Well done!';
+          document.getElementById('kegelCount').textContent = '✓';
+          document.getElementById('kegelStartBtn').textContent = '▶ Start';
+          document.getElementById('kegelStartBtn').onclick = startKegel;
+          showToast('Kegel session done! 💪');
+          return;
+        }
+        kegelPhase = 'squeeze';
+        kegelCount = 5;
+        document.getElementById('kegelStatus').textContent = '💪 SQUEEZE — hold tight';
+        document.getElementById('kegelCount').style.color = 'var(--accent)';
+      }
+    }
+  }, 1000);
+  document.getElementById('kegelStatus').textContent = '💪 SQUEEZE — hold tight';
+}
+
+function pauseKegel() {
+  clearInterval(kegelInterval); kegelInterval = null;
+  document.getElementById('kegelStartBtn').textContent = '▶ Resume';
+  document.getElementById('kegelStartBtn').onclick = startKegel;
+}
+
+function resetKegel() {
+  clearInterval(kegelInterval); kegelInterval = null;
+  kegelPhase = 'squeeze'; kegelCount = 5; kegelRep = 0;
+  document.getElementById('kegelCount').textContent = '5';
+  document.getElementById('kegelCount').style.color = 'var(--accent)';
+  document.getElementById('kegelStatus').textContent = 'Press Start to begin your session';
+  document.getElementById('kegelRep').textContent = '0';
+  document.getElementById('kegelStartBtn').textContent = '▶ Start';
+  document.getElementById('kegelStartBtn').onclick = startKegel;
+}
+
+// ============================================
+// MEALS
+// ============================================
+function toggleMeal(header) {
+  const body = header.nextElementSibling;
+  body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+
+// ============================================
+// THEME
+// ============================================
+function toggleTheme() {
+  document.getElementById('themePanel').classList.toggle('hidden');
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('omie_theme', theme);
+  document.getElementById('themePanel').classList.add('hidden');
+}
+
+// ============================================
+// TOAST
+// ============================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ============================================
+// STARTUP
+// ============================================
+window.addEventListener('load', () => {
+  // Load saved theme
+  const theme = localStorage.getItem('omie_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', theme);
+
+  const profile = localStorage.getItem('omie_profile');
+  if (profile) {
+    document.getElementById('onboarding').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    initApp();
+  }
+
+  // Close modals on overlay click
+  document.getElementById('tipModal').addEventListener('click', function(e) {
+    if (e.target === this) closeTip();
+  });
+});
+</script>
+</body>
+</html>
