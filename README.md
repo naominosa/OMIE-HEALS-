@@ -22,32 +22,6 @@ A fully offline, single-file wellness website built for real transformation. No 
 - **5 Themes** — Dark, Light, Forest, Ocean, Sand
 - **All data saved locally** — Your privacy is protected
 
-## 🚀 How to Host on GitHub Pages (Free)
-
-1. Create a free account at [github.com](https://github.com)
-2. Click **New Repository**
-3. Name it: `omie-heals` (or anything you like)
-4. Make it **Public**
-5. Click **Create Repository**
-6. Click **uploading an existing file**
-7. Drag and drop `index.html` from this folder
-8. Click **Commit changes**
-9. Go to **Settings** → **Pages**
-10. Under **Source**, select `main` branch → `/root`
-11. Click **Save**
-12. Your site will be live at: `https://YOUR-USERNAME.github.io/omie-heals`
-
-That's it! Free forever. Share the link with anyone you want.
-
-## 📱 Using on Your Phone
-
-Once hosted, open the link on your phone.
-- On iPhone: Safari → Share → **Add to Home Screen**
-- On Android: Chrome → Menu → **Add to Home Screen**
-
-It will work like an app icon on your phone!
-
-## 🔒 Data & Privacy
 
 All your journal entries, streaks, and check-ins are saved to your device's local storage only. Nothing is sent to any server. Your healing is private.
 
